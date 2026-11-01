@@ -116,8 +116,17 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
 - Gemini: gemini-3.8-flash / 3.7 / flash-latest answered 503 "high demand" on 2026-11-01 → `lib/ai.ts` tries GEMINI_MODEL
   then falls back to `gemini-3.5-flash`; tagging capped at 9 s so it never blocks the aha moment.
 - Kwop pay link `https://kwop.io/fitlook/pay/<id>` answered 502 from Kwop's side on 2026-11-01 (app link format is right).
-- [ ] Vercel project "fitlook" (Root Directory `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com.
-- [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io.
+- [x] Vercel: account `karlschemm-jpg`, project "fitlook" (prj_YKMavygWqP9hDbxPIiHX2KssgKu8), deployed with `vercel deploy --prod`
+      from the `fitlook/` folder (Git auto-deploy not connected: Vercel's GitHub app has no access to the repo yet).
+      **Production: https://fitlook-beta.vercel.app** (fitlook.vercel.app was taken). Production env: KWOP_API,
+      NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (type config, public by design), SUPABASE_SERVICE_ROLE_KEY,
+      GEMINI_API_KEY, GEMINI_MODEL, NEXT_PUBLIC_SITE_URL. Supabase site_url + uri_allow_list set to the production URL.
+- [x] Live test 2026-11-01 with test+1793571776908@fitlook.app (kept): full journey passes, aha ~5.7 s, Gemini tagging works live.
+- [x] `POST KWOP_API/connect {"url":"https://fitlook-beta.vercel.app"}` → `{"ok":true,"message":"Connected to Kwop."}`;
+      https://kwop.io/fitlook/app → 302 to the app; the Kwop page buttons now link to `<app>/signup?plan=…`.
+- [ ] Kwop checkout `https://kwop.io/fitlook/pay/<id>` returns Cloudflare 502 "Host Error" from Kwop's server (all 3 plans,
+      before and after connect). The app's pay links are correct; re-test the pay → /dashboard?paid=1 and cancel → /pricing
+      round trip once Kwop fixes it.
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
       `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`.
 - [x] Gemini key re-sent 2026-11-01 (new session; `.env.local` is never committed, so it must be re-added in each fresh
