@@ -98,12 +98,32 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
 
 ## Build status (keep updated)
 - [x] Step 0 research, CLAUDE.md, .env.example
-- [x] App code (all routes above), `npm run build` + `npm run lint` clean
-- [ ] Supabase project "fitlook" (region us-east-1), migrations pushed, email confirmation off, site URL — BLOCKED: build container network policy denies api.supabase.com / *.supabase.co
-- [ ] Local end-to-end test with a real Supabase — needs Supabase
-- [ ] Vercel project "fitlook" (root dir `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com
-- [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io
-- [ ] Gemini key — not provided yet (https://aistudio.google.com/apikey)
+- [x] App code (all routes above). `npm run build` and `npm run lint`: zero errors.
+- [x] Migration tested on a local Postgres 16 with Supabase-like roles: applies cleanly; RLS checked (user A cannot read,
+      update or delete user B's rows, cannot change counters, cannot insert quota rows, cannot put B's garment in a suitcase).
+- [x] Local journey tested with Playwright against a local Supabase stand-in (Kwop unreachable → plan falls back to Free):
+      signup?plan=Pro → onboarding (4 cards) → 3 Example items → sample photo → background removed + saved (aha, ~0.3 s)
+      → paywall with Pro highlighted → 2 more scans → paywall after the 3rd → 4th refused by the server (402) → pay links
+      `kwop.io/fitlook/pay/1064|1065|1066?email=…` → trip → 14 daily looks → PDF gated (Global) → suitcase packed toggle →
+      2nd trip refused (Free = 1) → /pricing → /dashboard?paid=1 → log out / log in → delete account. No page errors.
+- [x] Security: KWOP_API / service key absent from `.next/static` and from git; zod validation on every action and API route;
+      error.tsx, global-error.tsx, not-found.tsx.
+- [ ] Supabase project "fitlook" (region us-east-1), `supabase db push`, email confirmation off, site URL — BLOCKED in the
+      cloud build container: its network policy denies api.supabase.com / *.supabase.co, and no browser for the login.
+- [ ] Vercel project "fitlook" (Root Directory `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com.
+- [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io.
+- [ ] Gemini key — not provided yet (https://aistudio.google.com/apikey). Without it: AI auto-tagging and AI stylist notes
+      show "Coming soon"; background removal and outfit planning work without it.
+
+### Remaining steps, in order (from a machine/environment that can reach Supabase, Vercel and Kwop)
+1. `npx supabase login` → `npx supabase projects create fitlook --region us-east-1 --db-password <generated>` →
+   `npx supabase link --project-ref <ref>` → `npx supabase db push`. Auth settings (Management API
+   `PATCH /v1/projects/<ref>/config/auth`): `mailer_autoconfirm: true`, `site_url`, `uri_allow_list` incl. `<url>/auth/callback`.
+   Put URL, anon key, service-role key and DB password in `.env.local`.
+2. `npx vercel login` → `npx vercel link --project fitlook` (Root Directory `fitlook`) → add every `.env.example` variable for
+   production (`NEXT_PUBLIC_SITE_URL` = production URL) → `npx vercel --prod`.
+3. Live test with a new email (same journey as above).
+4. `curl -X POST "$KWOP_API/connect" -H 'content-type: application/json' -d '{"url":"https://<project>.vercel.app"}'`, then open https://kwop.io/fitlook/app.
 
 ## Commands
 `npm run dev` · `npm run build` · `npm run lint` · `npx supabase link --project-ref <ref>` · `npx supabase db push` · `npx vercel --prod`

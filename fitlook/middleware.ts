@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
   };
 
   if (!user && PROTECTED.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-    return redirect(`/login?next=${encodeURIComponent(pathname)}`);
+    return redirect(`/login?next=${encodeURIComponent(pathname + request.nextUrl.search)}`);
   }
   if (user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
     return redirect("/dashboard");

@@ -33,11 +33,11 @@ export default function Landing() {
       <main>
         {/* HERO: the result + the product working */}
         <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-2 lg:pt-20">
-          <div>
+          <div className="min-w-0">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-bold">
               <Sparkles className="size-3.5" /> Your AI stylist for every trip
             </div>
-            <h1 className="text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+            <h1 className="text-[2.6rem] font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
               2 weeks of outfits.
               <br />
               <span className="bg-primary px-2 text-primary-foreground [box-decoration-break:clone]">One carry-on.</span>
@@ -52,7 +52,7 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative min-w-0">
             <div className="rounded-[2rem] border border-border bg-card p-5 shadow-2xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -69,7 +69,7 @@ export default function Landing() {
                 <Wand2 className="size-6" />
                 <div className="checker grid aspect-[4/5] place-items-center rounded-2xl p-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/examples/tee.svg" alt="The same tee with the background removed" className="w-full drop-shadow-xl" />
+                  <img src="/sample/striped-tee-cutout.png" alt="The same tee with the background removed" className="w-full drop-shadow-xl" />
                 </div>
               </div>
               <div className="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">

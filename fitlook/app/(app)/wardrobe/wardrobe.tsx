@@ -44,7 +44,7 @@ export function Wardrobe({ initial, left: initialLeft, free, first, ai }: { init
   const shown = useMemo(() => (filter === "all" ? items : items.filter((g) => g.category === filter)), [items, filter]);
   const realCount = items.filter((g) => !g.is_example).length;
 
-  async function digitize(file: Blob) {
+  async function digitize(file: Blob, name?: string) {
     if (left <= 0) {
       openPaywall({ reason: free ? "You've used your 3 free scans." : "Your closet is full on this plan." });
       return;
@@ -57,6 +57,7 @@ export function Wardrobe({ initial, left: initialLeft, free, first, ai }: { init
       const fd = new FormData();
       fd.append("file", result.blob, "garment.png");
       fd.append("category", category);
+      if (name) fd.append("name", name);
       const res = await fetch("/api/garments", { method: "POST", body: fd });
       const data = await res.json().catch(() => ({}));
       if (res.status === 402) {
@@ -80,7 +81,7 @@ export function Wardrobe({ initial, left: initialLeft, free, first, ai }: { init
   async function trySample() {
     const blob = await fetch("/sample/striped-tee.jpg").then((r) => r.blob());
     setCategory("top");
-    digitize(blob);
+    digitize(blob, "Striped tee");
   }
 
   return (

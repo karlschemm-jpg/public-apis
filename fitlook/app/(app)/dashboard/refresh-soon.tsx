@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 export function RefreshSoon() {
   const router = useRouter();
   useEffect(() => {
-    const t = setInterval(() => router.refresh(), 5000);
+    let n = 0;
+    const t = setInterval(() => {
+      if (++n > 24) return clearInterval(t); // stop after 2 minutes
+      router.refresh();
+    }, 5000);
     return () => clearInterval(t);
   }, [router]);
   return null;
