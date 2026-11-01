@@ -9,6 +9,7 @@ import { tagGarment, aiEnabled } from "@/lib/ai";
 import { CATEGORIES } from "@/lib/utils";
 
 export const runtime = "nodejs";
+export const maxDuration = 60; // AI tagging can take a few seconds
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const TYPES = ["image/png", "image/jpeg", "image/webp"];

@@ -8,6 +8,7 @@ import { BottomNav, SideNav } from "@/components/app-nav";
 import { PaywallProvider, UpgradeButton } from "@/components/paywall";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60; // server actions here may call Gemini
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, plan } = await requireUser();

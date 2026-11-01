@@ -85,7 +85,7 @@ When a quota is hit → paywall showing the next plan and what it adds.
 Next.js 15 App Router + TypeScript + Tailwind v4 + shadcn/ui-style components (`components/ui`, written by hand because the
 shadcn registry was unreachable from the build container) · Supabase (Postgres, Auth email+password, confirmation OFF, RLS on every
 table, Storage bucket `garments` private + signed URLs) · Vercel free · AI via `lib/ai.ts` only (Gemini, `GEMINI_MODEL`
-default `gemini-flash-latest` = newest Flash). Without `GEMINI_API_KEY`, AI parts show "Coming soon".
+default `gemini-3.8-flash` = newest Flash, thinking level "low"). Without `GEMINI_API_KEY`, AI parts show "Coming soon".
 PWA: `app/manifest.ts` + `public/icon-192.png`, `public/icon-512.png`.
 
 Security model: users can read their own rows; inserts that consume quota (garments, trips, outfits) and all counters
@@ -112,8 +112,9 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
       cloud build container: its network policy denies api.supabase.com / *.supabase.co, and no browser for the login.
 - [ ] Vercel project "fitlook" (Root Directory `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com.
 - [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io.
-- [ ] Gemini key — not provided yet (https://aistudio.google.com/apikey). Without it: AI auto-tagging and AI stylist notes
-      show "Coming soon"; background removal and outfit planning work without it.
+- [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
+      `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`. Generation calls could not finish from the
+      build container (its gateway drops long requests), so test AI tagging on the live deploy.
 
 ### Remaining steps, in order (from a machine/environment that can reach Supabase, Vercel and Kwop)
 1. `npx supabase login` → `npx supabase projects create fitlook --region us-east-1 --db-password <generated>` →
