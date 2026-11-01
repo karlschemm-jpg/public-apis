@@ -6,19 +6,31 @@ import { CATEGORIES } from "@/lib/utils";
 const KEY = process.env.GEMINI_API_KEY || "";
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
+// When the main model is overloaded (503) or rate-limited (429), try these in order.
+const FALLBACKS = ["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash"];
+const MODELS = [MODEL, ...FALLBACKS.filter((m) => m !== MODEL)];
+
 export const aiEnabled = () => Boolean(KEY);
 
 async function generateJson(parts: unknown[], schemaHint: string): Promise<unknown> {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-goog-api-key": KEY },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [...parts, { text: schemaHint }] }],
-      generationConfig: { responseMimeType: "application/json", temperature: 0.4, thinkingConfig: { thinkingLevel: "low" } },
-    }),
-    signal: AbortSignal.timeout(40000),
-  });
-  if (!res.ok) throw new Error(`Gemini answered ${res.status}`);
+  const deadline = Date.now() + 40000;
+  let res: Response | null = null;
+  for (const model of MODELS) {
+    const left = deadline - Date.now();
+    if (left < 3000) break;
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-goog-api-key": KEY },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [...parts, { text: schemaHint }] }],
+        generationConfig: { responseMimeType: "application/json", temperature: 0.4, thinkingConfig: { thinkingLevel: "low" } },
+      }),
+      signal: AbortSignal.timeout(left),
+    });
+    if (res.status !== 503 && res.status !== 429) break;
+    console.warn(`[ai] ${model} busy (${res.status}), trying next model`);
+  }
+  if (!res || !res.ok) throw new Error(`Gemini answered ${res?.status ?? "no response"}`);
   const data = await res.json();
   const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || "").join("") || "{}";
   return JSON.parse(text);

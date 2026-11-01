@@ -113,8 +113,11 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
 - [ ] Vercel project "fitlook" (Root Directory `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com.
 - [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io.
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
-      `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`. Generation calls could not finish from the
-      build container (its gateway drops long requests), so test AI tagging on the live deploy.
+      `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`.
+- [x] Gemini key re-sent 2026-11-01 (new session; `.env.local` is never committed, so it must be re-added in each fresh
+      container and in Vercel). Real tagging tested on `public/sample/striped-tee.jpg` → `{"name":"Striped T-Shirt",
+      "category":"top","color":"navy blue","warmth":"light","formality":"casual"}`. 3.8/3.7-flash were overloaded (503),
+      so `lib/ai.ts` now falls back on 503/429 to 3.7 → 3.6 → 3.5-flash within the 40 s budget.
 
 ### Remaining steps, in order (from a machine/environment that can reach Supabase, Vercel and Kwop)
 1. `npx supabase login` → `npx supabase projects create fitlook --region us-east-1 --db-password <generated>` →
