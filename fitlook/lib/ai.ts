@@ -12,28 +12,34 @@ const MODELS = [MODEL, ...FALLBACKS.filter((m) => m !== MODEL)];
 
 export const aiEnabled = () => Boolean(KEY);
 
-async function generateJson(parts: unknown[], schemaHint: string): Promise<unknown> {
-  const deadline = Date.now() + 40000;
-  let res: Response | null = null;
+async function generateJson(parts: unknown[], schemaHint: string, budgetMs: number): Promise<unknown> {
+  const deadline = Date.now() + budgetMs;
+  let lastError = "no model answered";
   for (const model of MODELS) {
     const left = deadline - Date.now();
-    if (left < 3000) break;
-    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-goog-api-key": KEY },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [...parts, { text: schemaHint }] }],
-        generationConfig: { responseMimeType: "application/json", temperature: 0.4, thinkingConfig: { thinkingLevel: "low" } },
-      }),
-      signal: AbortSignal.timeout(left),
-    });
-    if (res.status !== 503 && res.status !== 429) break;
-    console.warn(`[ai] ${model} busy (${res.status}), trying next model`);
+    if (left < 1500) break;
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": KEY },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [...parts, { text: schemaHint }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.4 },
+        }),
+        signal: AbortSignal.timeout(left),
+      });
+      if (!res.ok) {
+        lastError = `${model} answered ${res.status}`;
+        continue;
+      }
+      const data = await res.json();
+      const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || "").join("") || "{}";
+      return JSON.parse(text);
+    } catch (err) {
+      lastError = `${model}: ${(err as Error).message}`;
+    }
   }
-  if (!res || !res.ok) throw new Error(`Gemini answered ${res?.status ?? "no response"}`);
-  const data = await res.json();
-  const text = data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text || "").join("") || "{}";
-  return JSON.parse(text);
+  throw new Error(lastError);
 }
 
 const TagSchema = z.object({
@@ -56,7 +62,8 @@ export async function tagGarment(base64: string, mime: string): Promise<GarmentT
  "category": one of ${CATEGORIES.join(", ")},
  "color": main color in one or two words,
  "warmth": "light" | "medium" | "warm",
- "formality": "casual" | "smart" | "formal"}`
+ "formality": "casual" | "smart" | "formal"}`,
+      9000 // never hold up the aha moment for long: without tags the user's chosen category is used
     );
     return TagSchema.parse(out);
   } catch (err) {
@@ -74,7 +81,8 @@ export async function stylistNotes(
   try {
     const out = await generateJson(
       [{ text: JSON.stringify({ trip, days }) }],
-      `You are a friendly US travel stylist. For each day, write one upbeat styling tip (max 20 words) for that outfit at this destination and weather (°F). Answer JSON only: {"notes": ["...", ...]} with exactly ${days.length} strings.`
+      `You are a friendly US travel stylist. For each day, write one upbeat styling tip (max 20 words) for that outfit at this destination and weather (°F). Answer JSON only: {"notes": ["...", ...]} with exactly ${days.length} strings.`,
+      25000
     );
     const parsed = z.object({ notes: z.array(z.string().max(300)) }).parse(out);
     return parsed.notes.slice(0, days.length);

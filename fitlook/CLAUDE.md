@@ -108,8 +108,14 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
       2nd trip refused (Free = 1) → /pricing → /dashboard?paid=1 → log out / log in → delete account. No page errors.
 - [x] Security: KWOP_API / service key absent from `.next/static` and from git; zod validation on every action and API route;
       error.tsx, global-error.tsx, not-found.tsx.
-- [ ] Supabase project "fitlook" (region us-east-1), `supabase db push`, email confirmation off, site URL — BLOCKED in the
-      cloud build container: its network policy denies api.supabase.com / *.supabase.co, and no browser for the login.
+- [x] Supabase: org "FitLook" (zyabqsfgpsfwcankiiah), project "fitlook" ref `zwdnzhhwwzfjswllgdkd`, us-east-1. Migration
+      applied through the Management API (`POST /v1/projects/<ref>/database/query`, the CLI login needs a TTY here),
+      mailer_autoconfirm on, keys + DB password in `.env.local`. RLS re-checked on the real project (cross-user read/update fail,
+      counters and direct inserts denied, anon denied).
+- [x] Local test against the real Supabase + Kwop: full journey passes; aha ~6 s incl. Gemini tagging.
+- Gemini: gemini-3.8-flash / 3.7 / flash-latest answered 503 "high demand" on 2026-11-01 → `lib/ai.ts` tries GEMINI_MODEL
+  then falls back to `gemini-3.5-flash`; tagging capped at 9 s so it never blocks the aha moment.
+- Kwop pay link `https://kwop.io/fitlook/pay/<id>` answered 502 from Kwop's side on 2026-11-01 (app link format is right).
 - [ ] Vercel project "fitlook" (Root Directory `fitlook`), env vars, production deploy — BLOCKED: network denies vercel.com.
 - [ ] Live test, `POST KWOP_API/connect`, check https://kwop.io/fitlook/app — BLOCKED: network denies kwop.io.
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
