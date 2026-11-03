@@ -69,6 +69,21 @@ yearly plans) are not in this file and were not applied; moving priced cards hig
 - `GET KWOP_API/plan?email=` → `{ paid, plan:{id,name}|null, status, until }` → `getPlan(email)` in `lib/kwop.ts`
   (cache 60 s per email; `/dashboard?paid=1` skips the cache; if Kwop fails, keep last known plan from `profiles.last_plan_*` and log).
 - `POST KWOP_API/cancel {email}` → show `message`, or the `manage_url` link if returned.
+- **Cancellation grace period** (2026-11-03, owner: "when subscription is cancelled set the account to free after the paid
+  month is over"). Kwop reports `paid:false` right after a cancel, so FitLook keeps its own record: table `subscriptions`
+  (one row per user: plan_id, plan_name, status active|canceling|expired, paid_since, current_period_end, canceled_at;
+  migration `20261103000000_subscriptions.sql`; RLS select-own, written only by the server). Logic is pure and unit-tested
+  in `lib/grace.ts` (`resolvePlan`), applied inside `getPlan()` so every paid check in the app follows it:
+  - Kwop paid → row active; period end = Kwop `until` if given, else the next monthly anniversary of `paid_since`
+    (Jan 31 → Feb 28, like card billing).
+  - Kwop not paid (cancelled in the app, in Whop or on Kwop) but `current_period_end` is in the future → the plan stays fully
+    active, status "canceling", until that date. After it → Free, row "expired" (never grants access again). Nothing is deleted;
+    Free limits apply again (e.g. 1 outfit plan a month, 3 scans).
+  - Cancel in Account → Plan & billing → dialog states the exact last day ("You'll keep everything in Pro until December 3,
+    2026") → POST KWOP_API/cancel → row "canceling" → "Subscription canceled · You keep Pro until …". The card then shows a
+    neutral "Active until Dec 3" badge, "Canceled · won't renew" and a muted callout with the date in bold. No red.
+  - Known limits: a refund or chargeback also keeps access until the period end; a user who paid before 2026-11-03 has no
+    `paid_since` yet, so their period is counted from the first time FitLook sees them as paid.
 - `POST KWOP_API/event {type,email,detail?}` fire-and-forget (via `after()`): `signup`, `onboarding_done`, `aha`
   (first real Closet Digitizer result), `paywall_view` (each paywall open), `feature_used` (detail = feature name).
 - `POST KWOP_API/connect {url}` once online (production https URL, no trailing slash). Then https://kwop.io/fitlook/app must open the app.
@@ -169,13 +184,17 @@ of the app. The landing page still shows monthly prices.
 - [x] 2026-11-03 Plans moved under the hero: verified 3 passes (390 px + 1280 px: DOM + visual order, 3-column vs stacked,
       all 3 CTAs → signup with the plan kept, content identical to the previous live version, zero console errors),
       end-to-end journey green, deployed.
+- [x] 2026-11-03 Cancellation grace period: 10 unit tests (lib/grace.ts) + 3 UI passes on 390/1280 px with a local stand-in Kwop
+      (paid → cancel dialog with date → still Pro, AI Matcher works → period end → Free, AI Matcher behind the paywall, closet
+      kept; zero console errors) + RLS check (users cannot insert or read others' subscriptions) + e2e journey green with the
+      real Kwop, deployed.
 - [x] Kwop checkout fixed on Kwop's side (2026-11-03): `https://kwop.io/fitlook/pay/1064|1065|1066?email=…` → 302 to a Whop
       checkout (`whop.com/checkout/ch_…`). A real payment → /dashboard?paid=1 round trip is still untested (needs a real card).
       2026-11-03: the owner reports a real payment went through. No FitLook account had a paid plan recorded yet at that
       time (`profiles.last_plan_*` is filled the first time the paying user opens the app), so the in-app unlock is unconfirmed.
       Owner then said the plan worked in the app and that they cancelled it on 2026-11-02. On 2026-11-03 Kwop answers
       `paid:false, status:"free"` for that email, i.e. Kwop ends access right after a cancel. Mismatch to settle:
-      /terms says "your plan stays active until the end of the period you paid for".
+      /terms says "your plan stays active until the end of the period you paid for" → now true (grace period, 2026-11-03).
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
       `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`.
 - [x] Gemini key re-sent 2026-11-01 (new session; `.env.local` is never committed, so it must be re-added in each fresh

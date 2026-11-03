@@ -2,6 +2,7 @@ import "server-only";
 import { after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planKeyFrom, type PlanKey } from "@/lib/plans";
+import { resolvePlan, type Resolved, type SubRow } from "@/lib/grace";
 
 // Everything Kwop lives here. KWOP_API is a server-only secret.
 const KWOP_API = (process.env.KWOP_API || "").replace(/\/$/, "");
@@ -24,7 +25,8 @@ async function kwopFetch(path: string, init?: RequestInit) {
   return res.json();
 }
 
-/** Which plan a user has. Server only. Cached 60 s per email unless fresh=true. */
+/** Which plan a user has. Server only. Cached 60 s per email unless fresh=true.
+ *  With a userId, the grace period applies (lib/grace.ts): a cancelled plan stays active until the paid month ends. */
 export async function getPlan(email: string, opts: { fresh?: boolean; userId?: string } = {}): Promise<UserPlan> {
   const key = email.trim().toLowerCase();
   const hit = cache.get(key);
@@ -32,28 +34,39 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
 
   try {
     const data = (await kwopFetch(`/plan?email=${encodeURIComponent(key)}`)) as KwopPlan;
-    const planKey = data.paid && data.plan ? planKeyFrom(data.plan.id, data.plan.name) : "free";
-    const value: UserPlan = {
-      key: planKey,
-      name: data.paid && data.plan ? data.plan.name : "Free",
+    let resolved: Resolved = {
       paid: Boolean(data.paid && data.plan),
-      status: data.status ?? null,
+      plan: data.paid ? data.plan : null,
+      status: data.paid && data.plan ? "active" : "free",
       until: data.until ?? null,
-      stale: false,
+      write: null,
     };
-    cache.set(key, { at: Date.now(), value });
     if (opts.userId) {
-      // remember the last known plan, so a Kwop outage never downgrades a payer
       const admin = createAdminClient();
+      const { data: row } = await admin.from("subscriptions").select("*").eq("user_id", opts.userId).maybeSingle<SubRow>();
+      resolved = resolvePlan(data, row ?? null);
+      if (resolved.write) {
+        await admin.from("subscriptions").upsert({ user_id: opts.userId, ...(row ?? {}), ...resolved.write, updated_at: new Date().toISOString() });
+      }
+      // remember the last known plan, so a Kwop outage never downgrades a payer
       await admin
         .from("profiles")
         .update({
-          last_plan_id: value.paid ? data.plan!.id : null,
-          last_plan_name: value.paid ? value.name : null,
+          last_plan_id: resolved.paid ? resolved.plan!.id : null,
+          last_plan_name: resolved.paid ? resolved.plan!.name : null,
           last_plan_checked_at: new Date().toISOString(),
         })
         .eq("id", opts.userId);
     }
+    const value: UserPlan = {
+      key: resolved.paid && resolved.plan ? planKeyFrom(resolved.plan.id, resolved.plan.name) : "free",
+      name: resolved.paid && resolved.plan ? shortName(resolved.plan.name) : "Free",
+      paid: resolved.paid,
+      status: resolved.status,
+      until: resolved.until,
+      stale: false,
+    };
+    cache.set(key, { at: Date.now(), value });
     return value;
   } catch (err) {
     console.error("[kwop] getPlan failed, using last known plan:", (err as Error).message);
@@ -61,14 +74,23 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
     if (opts.userId) {
       try {
         const admin = createAdminClient();
+        const { data: row } = await admin.from("subscriptions").select("*").eq("user_id", opts.userId).maybeSingle<SubRow>();
+        if (row && row.status !== "expired" && new Date(row.current_period_end) > new Date()) {
+          return { key: planKeyFrom(row.plan_id, row.plan_name), name: shortName(row.plan_name), paid: true, status: row.status, until: row.current_period_end, stale: true };
+        }
         const { data } = await admin.from("profiles").select("last_plan_id,last_plan_name").eq("id", opts.userId).single();
         if (data?.last_plan_id) {
-          return { key: planKeyFrom(data.last_plan_id, data.last_plan_name), name: data.last_plan_name || "Paid", paid: true, status: null, until: null, stale: true };
+          return { key: planKeyFrom(data.last_plan_id, data.last_plan_name), name: shortName(data.last_plan_name || "Paid"), paid: true, status: null, until: null, stale: true };
         }
       } catch {}
     }
     return { key: "free", name: "Free", paid: false, status: null, until: null, stale: true };
   }
+}
+
+/** Kwop names plans "FitLook Pro"; inside the app "Pro" reads better. */
+function shortName(name: string) {
+  return name.replace(/^fitlook\s+/i, "") || name;
 }
 
 export function payLink(planId: number, email: string): string {
@@ -94,8 +116,19 @@ export function track(type: KwopEvent, email: string, detail?: string) {
   }
 }
 
-export async function cancelSubscription(email: string): Promise<{ message: string; manage_url?: string }> {
+export async function cancelSubscription(email: string, userId: string): Promise<{ message: string; manage_url?: string; until?: string }> {
   const data = await kwopFetch("/cancel", { method: "POST", body: JSON.stringify({ email }) });
   cache.delete(email.trim().toLowerCase());
-  return { message: String(data?.message || "Your cancellation request was sent."), manage_url: data?.manage_url || undefined };
+  if (data?.manage_url) return { message: String(data?.message || ""), manage_url: data.manage_url };
+  // Kwop cancelled the renewal: keep access until the end of the month already paid for.
+  const admin = createAdminClient();
+  const { data: row } = await admin.from("subscriptions").select("*").eq("user_id", userId).maybeSingle<SubRow>();
+  if (row && row.status !== "expired") {
+    await admin
+      .from("subscriptions")
+      .update({ status: "canceling", canceled_at: row.canceled_at || new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq("user_id", userId);
+    return { message: String(data?.message || "Your subscription is cancelled."), until: row.current_period_end };
+  }
+  return { message: String(data?.message || "Your subscription is cancelled.") };
 }

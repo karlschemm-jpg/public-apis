@@ -351,11 +351,16 @@ export async function deleteOutfit(id: string) {
 
 // ---------- ACCOUNT ----------------------------------------------------------
 
-export async function cancelSubscriptionAction(): Promise<{ message: string; manage_url?: string; error?: string }> {
+export async function cancelSubscriptionAction(): Promise<{ message: string; manage_url?: string; error?: string; until?: string; plan?: string }> {
   const { user, plan } = await requireUser({ fresh: true });
   if (!plan.paid) return { message: "You're on the Free plan — nothing to cancel." };
+  if (plan.status === "canceling" && plan.until) {
+    return { message: "Your subscription is already cancelled.", until: plan.until, plan: plan.name };
+  }
   try {
-    return await cancelSubscription(user.email!);
+    // no revalidatePath here: the confirmation dialog must stay open; "Got it" refreshes the page
+    const r = await cancelSubscription(user.email!, user.id);
+    return { ...r, until: r.until ?? plan.until ?? undefined, plan: plan.name };
   } catch (err) {
     console.error("[kwop] cancel failed:", (err as Error).message);
     return { message: "", error: "We couldn't reach the billing service. Please try again in a minute." };
