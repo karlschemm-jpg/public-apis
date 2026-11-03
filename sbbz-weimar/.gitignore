@@ -1,3 +1,5 @@
 dist/
+dist-portable/
+*.zip
 node_modules/
 .env

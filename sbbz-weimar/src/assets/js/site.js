@@ -119,7 +119,8 @@
   var index = null;
   function loadIndex() {
     if (index) return Promise.resolve(index);
-    return fetch("/search-index.json").then(function (r) { return r.json(); }).then(function (d) {
+    var src = window.SBBZ_SEARCH ? Promise.resolve(window.SBBZ_SEARCH) : fetch("/search-index.json").then(function (r) { return r.json(); });
+    return src.then(function (d) {
       index = d.map(function (e) { e.n = norm(e.t + " " + e.s + " " + e.x); e.nt = norm(e.t); return e; });
       return index;
     });

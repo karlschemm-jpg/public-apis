@@ -36,6 +36,7 @@ const I = {
 
 async function detectMode() {
   try {
+    if (location.protocol === "file:") return "demo"; // Offline-Version: kein Server
     const r = await fetch("/api/assistant/status", { headers: { accept: "application/json" } });
     if (!r.ok) throw new Error();
     const d = await r.json();
@@ -236,8 +237,8 @@ async function askServer(q) {
 
 async function askLocal(q) {
   if (!localIndex) {
-    const r = await fetch("/assistant/knowledge.json");
-    localIndex = buildIndex(await r.json());
+    const data = window.SBBZ_KNOWLEDGE || (await (await fetch("/assistant/knowledge.json")).json());
+    localIndex = buildIndex(data);
   }
   await new Promise((r) => setTimeout(r, 350)); // kurze Pause, damit der Ladeindikator wahrnehmbar ist
   const hits = retrieve(localIndex, q, 4);
