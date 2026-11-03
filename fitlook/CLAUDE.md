@@ -171,6 +171,8 @@ of the app. The landing page still shows monthly prices.
       end-to-end journey green, deployed.
 - [x] Kwop checkout fixed on Kwop's side (2026-11-03): `https://kwop.io/fitlook/pay/1064|1065|1066?email=…` → 302 to a Whop
       checkout (`whop.com/checkout/ch_…`). A real payment → /dashboard?paid=1 round trip is still untested (needs a real card).
+      2026-11-03: the owner reports a real payment went through. No FitLook account had a paid plan recorded yet at that
+      time (`profiles.last_plan_*` is filled the first time the paying user opens the app), so the in-app unlock is unconfirmed.
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
       `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`.
 - [x] Gemini key re-sent 2026-11-01 (new session; `.env.local` is never committed, so it must be re-added in each fresh
