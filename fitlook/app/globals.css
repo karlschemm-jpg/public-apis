@@ -14,6 +14,10 @@
   --primary-foreground: #0d0f0a;
   --ring: #0d0f0a;
   --checker: #ececE6;
+  /* Stats accents (AA on --background and --card) */
+  --terracotta: #a8492a;
+  --sage: #47634a;
+  --warm: #f3ede4;
 }
 .dark {
   --background: #0b0c09;
@@ -27,6 +31,9 @@
   --primary-foreground: #0d0f0a;
   --ring: #c8ff3d;
   --checker: #1b1d15;
+  --terracotta: #ec9a77;
+  --sage: #a3c4a0;
+  --warm: #14130f;
 }
 
 @theme inline {
@@ -40,6 +47,9 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-ring: var(--ring);
+  --color-terracotta: var(--terracotta);
+  --color-sage: var(--sage);
+  --color-warm: var(--warm);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -66,6 +76,14 @@ body {
 
 @keyframes pop { 0% { transform: scale(0.8); opacity: 0 } 60% { transform: scale(1.06); opacity: 1 } 100% { transform: scale(1) } }
 .animate-pop { animation: pop 0.45s ease-out both; }
+
+/* Stats cards fade in one after another (delay set inline per card) */
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
+.animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop, .animate-fade-up { animation: none !important; }
+}
 
 @media print {
   .no-print { display: none !important; }

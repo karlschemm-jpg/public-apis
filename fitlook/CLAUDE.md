@@ -25,8 +25,16 @@ Features (most important first) → route:
 3. **AI Matcher** → `/outfits`. One outfit per day (top+bottom or dress, layer, shoes, accessory). Rule engine in
    `lib/matcher.ts`; Pro/Global add weather adjustments and (with a Gemini key) AI stylist notes.
 4. **Suitcase View** → `/suitcase`. Swipeable list of everything packed for a trip, by category, with "packed" checkboxes.
-Menu: Wardrobe, Trips, Outfits, Suitcase, Profile, Account (sidebar on desktop, bottom tab bar on phone — Profile is
-reached from Account on phone).
+5. **User Stats** → `/stats` (added 2026-11-03). Computed on the server in `lib/stats.ts` from the user's own rows (no new
+   table, RLS-scoped client, one parallel query round). Cards: items digitized, trips planned, daily looks styled, luggage
+   space saved (+ trend icon: this month vs last month), most-styled pieces (how often a garment appears in planned outfits —
+   FitLook has no "worn" tracking, so "most worn" = most styled), closet mix by category + top colors, travel trends.
+   Luggage saved = Σ over real (non-example) trips with a packed suitcase of (days × 3 pieces − pieces in suitcase), × 1.8 L
+   per piece (`NAIVE_PIECES_PER_DAY`, `LITERS_PER_PIECE`). Example items/trips are excluded from the headline numbers; a user
+   with only examples sees "Your numbers start with your first real piece" + Snap a piece. Free for every plan (no quota,
+   no AI); Kwop event `feature_used` {"detail":"Stats"} on each visit.
+Menu: Wardrobe, Trips, Outfits, Suitcase, Stats, Profile, Account (sidebar on desktop; bottom tab bar on phone has 6 tabs:
+Wardrobe, Trips, Outfits, Suitcase, Stats, Account — Profile is reached from Account on phone).
 
 How it works: 1. Snap clothes · 2. Add trip details · 3. Get looks.
 
@@ -95,6 +103,14 @@ Column-level grants stop users from editing counters on `profiles`.
 ## Design
 Bold, clean, modern. Main color `#C8FF3D` (lime) on near-black ink. Light + dark mode (system default + toggle). Mobile first.
 Loading / empty (one sentence + one button) / error states on every screen. Friendly, short US English copy.
+Stats page accents (requested 2026-11-03): frosted glass cards (`bg-card/75 backdrop-blur-md`, white/60 border) on a warm
+neutral backdrop (`--warm`) with soft terracotta / sage / lime blurs. Tokens `--terracotta` (#a8492a light, #ec9a77 dark) and
+`--sage` (#47634a light, #a3c4a0 dark) are used for trend icons (sage = up, terracotta = down), bars and the trophy only; lime
+stays the brand color. All text ≥ 5.1:1 contrast (WCAG AA) in both modes, worst case measured on glass over a terracotta blur.
+Motion: `.animate-fade-up` with a 70 ms stagger per card; `prefers-reduced-motion: reduce` turns all keyframe animations off.
+Note: the owner's 2026-11-03 request referred to a "verification loop", "funnel rules" (no prices on the landing page, price per
+day, yearly plans) and terracotta/sage as "signature" colors; none of these were in this file. They were not applied to the rest
+of the app. The landing page still shows monthly prices.
 
 ## Build status (keep updated)
 - [x] Step 0 research, CLAUDE.md, .env.example
@@ -124,6 +140,8 @@ Loading / empty (one sentence + one button) / error states on every screen. Frie
 - [x] Live test 2026-11-01 with test+1793571776908@fitlook.app (kept): full journey passes, aha ~5.7 s, Gemini tagging works live.
 - [x] `POST KWOP_API/connect {"url":"https://fitlook-beta.vercel.app"}` → `{"ok":true,"message":"Connected to Kwop."}`;
       https://kwop.io/fitlook/app → 302 to the app; the Kwop page buttons now link to `<app>/signup?plan=…`.
+- [x] 2026-11-03 User Stats page: verified 3 passes (390 px + 1280 px, light + dark, reduced motion, new user, zero console
+      errors), end-to-end journey green with a Stats step, deployed.
 - [ ] Kwop checkout `https://kwop.io/fitlook/pay/<id>` returns Cloudflare 502 "Host Error" from Kwop's server (all 3 plans,
       before and after connect). The app's pay links are correct; re-test the pay → /dashboard?paid=1 and cancel → /pricing
       round trip once Kwop fixes it.

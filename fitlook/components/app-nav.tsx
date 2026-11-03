@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Home, Luggage, Shirt, Sparkles, User, Settings } from "lucide-react";
+import { BarChart3, CalendarDays, Home, Luggage, Shirt, Sparkles, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: "/trips", label: "Trips", icon: CalendarDays, mobile: true },
   { href: "/outfits", label: "Outfits", icon: Sparkles, mobile: true },
   { href: "/suitcase", label: "Suitcase", icon: Luggage, mobile: true },
+  { href: "/stats", label: "Stats", icon: BarChart3, mobile: true },
   { href: "/profile", label: "Profile", icon: User, mobile: false },
   { href: "/account", label: "Account", icon: Settings, mobile: true },
 ];
@@ -41,12 +42,12 @@ export function BottomNav() {
   const path = usePathname();
   return (
     <nav className="no-print fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-6">
         {ITEMS.filter((i) => i.mobile).map(({ href, label, icon: Icon }) => {
           const active = path === href || path.startsWith(href + "/") || (href === "/account" && path.startsWith("/profile"));
           return (
-            <Link key={href} href={href} className="flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold">
-              <span className={cn("grid h-7 w-12 place-items-center rounded-full transition", active ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
+            <Link key={href} href={href} className="flex min-w-0 flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold">
+              <span className={cn("grid h-7 w-11 place-items-center rounded-full transition", active ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>
                 <Icon className="size-5" />
               </span>
               <span className={active ? "text-foreground" : "text-muted-foreground"}>{label}</span>
