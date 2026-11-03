@@ -169,9 +169,8 @@ of the app. The landing page still shows monthly prices.
 - [x] 2026-11-03 Plans moved under the hero: verified 3 passes (390 px + 1280 px: DOM + visual order, 3-column vs stacked,
       all 3 CTAs → signup with the plan kept, content identical to the previous live version, zero console errors),
       end-to-end journey green, deployed.
-- [ ] Kwop checkout `https://kwop.io/fitlook/pay/<id>` returns Cloudflare 502 "Host Error" from Kwop's server (all 3 plans,
-      before and after connect). The app's pay links are correct; re-test the pay → /dashboard?paid=1 and cancel → /pricing
-      round trip once Kwop fixes it.
+- [x] Kwop checkout fixed on Kwop's side (2026-11-03): `https://kwop.io/fitlook/pay/1064|1065|1066?email=…` → 302 to a Whop
+      checkout (`whop.com/checkout/ch_…`). A real payment → /dashboard?paid=1 round trip is still untested (needs a real card).
 - [x] Gemini key received 2026-11-01, in `.env.local` (add it to Vercel as GEMINI_API_KEY). Key verified (models list 200).
       `gemini-2.5-flash` is closed to new users → default model `gemini-3.8-flash`.
 - [x] Gemini key re-sent 2026-11-01 (new session; `.env.local` is never committed, so it must be re-added in each fresh
