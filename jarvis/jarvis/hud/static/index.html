@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VAULT">
+  <meta name="theme-color" content="#05080d">
   <title>VAULT Command Center</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -39,12 +44,21 @@
       </div>
       <div class="route" id="routeLine">regex → local → haiku</div>
       <div class="feed" id="feed" aria-live="polite"></div>
+      <div class="talk">
+        <button type="button" class="mic" id="micBtn" aria-pressed="false" aria-label="Tap to talk">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+          <span id="micLabel">Tap to talk</span>
+        </button>
+        <label class="speak" title="Keep listening; only respond when a line starts with the wake word">
+          <input type="checkbox" id="handsFree"> hands-free
+        </label>
+      </div>
       <form class="cmd" id="cmdForm" autocomplete="off">
         <span class="prompt">&gt;</span>
-        <input id="cmdInput" placeholder="Type a command, or speak after the wake word…" aria-label="Command">
+        <input id="cmdInput" placeholder="Type a command…" aria-label="Command" enterkeyhint="send">
         <label class="speak"><input type="checkbox" id="speakToggle"> speak</label>
         <button type="submit">Send</button>
-        <button type="button" class="ghost" id="stopBtn" title="Stop speaking">■</button>
+        <button type="button" class="ghost" id="stopBtn" title="Stop listening and speaking" aria-label="Stop">■</button>
       </form>
     </section>
 
@@ -59,5 +73,6 @@
     </section>
   </main>
   <script src="/static/app.js"></script>
+  <script src="/static/voice.js"></script>
 </body>
 </html>

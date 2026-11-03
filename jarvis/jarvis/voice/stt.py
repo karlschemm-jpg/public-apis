@@ -1,4 +1,4 @@
-"""Ears: microphone → energy-gated utterances → faster-whisper, all on-device."""
+"""Ears: faster-whisper transcription, plus an energy-gated microphone listener. All on-device."""
 
 from __future__ import annotations
 
@@ -12,21 +12,37 @@ import numpy as np
 from ..events import EventBus
 
 
+class Transcriber:
+    """faster-whisper model. Used by the host mic loop and by /api/voice (iPad/browser mic)."""
+
+    def __init__(self, cfg: dict) -> None:
+        from faster_whisper import WhisperModel  # heavy import, keep lazy
+
+        v = cfg["voice"]
+        self.model = WhisperModel(v.get("stt_model", "base.en"),
+                                  device=v.get("stt_device", "auto"),
+                                  compute_type=v.get("stt_compute", "int8"))
+        self._lock = threading.Lock()  # one decode at a time keeps CPU/GPU memory predictable
+
+    def transcribe(self, audio: np.ndarray) -> str:
+        with self._lock:
+            segments, _ = self.model.transcribe(audio, language="en", vad_filter=True, beam_size=1)
+            return " ".join(s.text.strip() for s in segments).strip()
+
+
 class Ears:
-    def __init__(self, cfg: dict, bus: EventBus) -> None:
+    """Host-machine microphone → utterances, gated on loudness."""
+
+    def __init__(self, cfg: dict, bus: EventBus, transcriber: Transcriber) -> None:
         v = cfg["voice"]
         self.sr = v.get("sample_rate", 16000)
         self.silence_s = v.get("silence_ms", 800) / 1000
         self.threshold = v.get("energy_threshold", 0.012)
         self.max_s = v.get("max_utterance_s", 20)
         self.bus = bus
+        self.transcriber = transcriber
         self.muted = threading.Event()  # set while Jarvis is talking (half-duplex, no echo)
         self._frames: queue.Queue = queue.Queue()
-        from faster_whisper import WhisperModel  # heavy import, keep lazy
-
-        self.model = WhisperModel(v.get("stt_model", "base.en"),
-                                  device=v.get("stt_device", "auto"),
-                                  compute_type=v.get("stt_compute", "int8"))
 
     def _callback(self, indata, frames, t, status) -> None:
         self._frames.put(indata[:, 0].copy())
@@ -69,5 +85,4 @@ class Ears:
                         self.bus.publish("listening", state="armed")
 
     def transcribe(self, audio: np.ndarray) -> str:
-        segments, _ = self.model.transcribe(audio, language="en", vad_filter=True, beam_size=1)
-        return " ".join(s.text.strip() for s in segments).strip()
+        return self.transcriber.transcribe(audio)

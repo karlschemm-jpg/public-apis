@@ -1,4 +1,4 @@
-"""Mouth: Kokoro TTS, generated and played locally."""
+"""Mouth: Kokoro TTS, generated locally. `Synthesizer` makes audio; `Mouth` plays it on the host."""
 
 from __future__ import annotations
 
@@ -11,14 +11,33 @@ from ..events import EventBus
 KOKORO_SR = 24000
 
 
-class Mouth:
-    def __init__(self, cfg: dict, bus: EventBus) -> None:
+class Synthesizer:
+    rate = KOKORO_SR
+
+    def __init__(self, cfg: dict) -> None:
         from kokoro import KPipeline  # heavy import, keep lazy
 
         v = cfg["voice"]
         self.voice = v.get("tts_voice", "af_heart")
         self.speed = v.get("tts_speed", 1.0)
         self.pipeline = KPipeline(lang_code=v.get("tts_lang", "a"))
+        self._lock = threading.Lock()
+
+    def chunks(self, text: str):
+        with self._lock:
+            for _, _, audio in self.pipeline(text, voice=self.voice, speed=self.speed):
+                yield np.asarray(audio, dtype=np.float32)
+
+    def synthesize(self, text: str) -> np.ndarray:
+        parts = list(self.chunks(text))
+        return np.concatenate(parts) if parts else np.zeros(0, dtype=np.float32)
+
+
+class Mouth:
+    """Plays speech through the host machine's speakers."""
+
+    def __init__(self, cfg: dict, bus: EventBus, synth: Synthesizer) -> None:
+        self.synth = synth
         self.bus = bus
         self._interrupt = threading.Event()
 
@@ -36,10 +55,9 @@ class Mouth:
         self._interrupt.clear()
         self.bus.publish("speaking", state="start", text=text)
         try:
-            for _, _, audio in self.pipeline(text, voice=self.voice, speed=self.speed):
+            for audio in self.synth.chunks(text):
                 if self._interrupt.is_set():
                     break
-                audio = np.asarray(audio, dtype=np.float32)
                 self._meter(audio)
                 sd.play(audio, KOKORO_SR)
                 sd.wait()

@@ -25,5 +25,6 @@ the report into `vault/Reports/` itself, so do not write the report file yoursel
 - `jarvis/brain.py` skill + memory injection, Claude call, report filing
 - `jarvis/memory.py` vault search, link graph, note writing
 - `jarvis/voice/` faster-whisper STT, Kokoro TTS, listen loop
-- `jarvis/hud/` stdlib HTTP + SSE server and the static dashboard
+- `jarvis/hud/` stdlib HTTP(S) + SSE server, access key + self-signed cert (`net.py`), static dashboard;
+  `static/voice.js` records with the viewing device's mic (iPad) and plays replies there
 - Tests: `python -m pytest tests` (no network, no audio hardware needed)
