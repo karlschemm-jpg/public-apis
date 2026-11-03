@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cancelSubscriptionAction, deleteAccountAction } from "@/app/actions";
+import { cancelSubscriptionAction, cancelTrialAction, deleteAccountAction } from "@/app/actions";
 
 export function CancelButton({ planName, until }: { planName: string; until: string | null }) {
   const router = useRouter();
@@ -75,5 +75,48 @@ export function DeleteAccount() {
       </Button>
       {state?.error && <p role="alert" className="w-full text-sm text-red-600">{state.error}</p>}
     </form>
+  );
+}
+
+export function CancelTrialButton({ planName }: { planName: string }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <>
+      <button onClick={() => { setError(null); setOpen(true); }} className="tap w-full rounded-full border-2 border-slate/30 py-2.5 text-sm font-bold sm:w-auto sm:px-6">
+        Cancel trial
+      </button>
+      <Dialog open={open} onOpenChange={(v) => !pending && setOpen(v)}>
+        <DialogContent>
+          <DialogTitle className="text-xl font-black">End your {planName} trial now?</DialogTitle>
+          <DialogDescription className="mt-2 text-sm text-muted-foreground">
+            You won{"\u2019"}t be charged {"\u2014"} no card was ever added. Your account moves to Free right away and your closet, trips and looks stay.
+          </DialogDescription>
+          {error && <p role="alert" className="mt-3 text-sm font-medium text-red-600">{error}</p>}
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row-reverse">
+            <Button
+              variant="outline"
+              className="sm:flex-1"
+              disabled={pending}
+              onClick={() =>
+                start(async () => {
+                  const r = await cancelTrialAction();
+                  if (r.error) return setError(r.error);
+                  setOpen(false);
+                  router.refresh();
+                })
+              }
+            >
+              {pending && <Loader2 className="animate-spin" />} End trial
+            </Button>
+            <Button className="sm:flex-1" disabled={pending} onClick={() => setOpen(false)}>
+              Keep my trial
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

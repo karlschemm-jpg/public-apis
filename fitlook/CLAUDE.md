@@ -69,6 +69,30 @@ yearly plans) are not in this file and were not applied; moving priced cards hig
 - `GET KWOP_API/plan?email=` → `{ paid, plan:{id,name}|null, status, until }` → `getPlan(email)` in `lib/kwop.ts`
   (cache 60 s per email; `/dashboard?paid=1` skips the cache; if Kwop fails, keep last known plan from `profiles.last_plan_*` and log).
 - `POST KWOP_API/cancel {email}` → show `message`, or the `manage_url` link if returned.
+- **7-day free trial** (2026-11-03, owner: "make a 7 day free trial"). Kwop's API (`GET KWOP_API`, now also returning
+  per_day, yearly and `checkout:"embedded"`) has no trial field, and FitLook cannot stop Whop from charging a card. So the
+  trial is run by FitLook **without a card**: "No charge today, cancel anytime" is literally true and nothing can be billed.
+  When Kwop/Whop expose a trial (card on file, first charge on day 8), switch the "Start 7 Days Free" buttons to Kwop's
+  trial checkout and keep the same screens.
+  - Table `trials` (migration `20261103010000_trials.sql`): one row per account (primary key = user_id → one trial per
+    account, enforced by the database), plan_id, plan_name, started_at, ends_at (+7 days), canceled_at. RLS select-own;
+    written only by the server.
+  - Logic: `applyTrial()` in `lib/grace.ts` (unit-tested), applied in `getPlan()` after the subscription/grace logic: a real
+    subscription always wins; an unexpired, uncancelled trial gives its plan with status "trialing" and `until` = ends_at.
+    Trials are never stored as `profiles.last_plan_*` (that is for real payers during a Kwop outage).
+  - Where: every plan card for a signed-in Free user who never trialed (paywall + /pricing) shows "Start 7 Days Free" +
+    "No charge today, cancel anytime" + a small "or subscribe now" (the Kwop pay link). Visitors on /pricing get
+    "Start 7 Days Free" → `/signup?plan=<Plan>&trial=1` (cookie `fl_trial`) → the trial starts at signup. The landing page
+    is unchanged.
+  - Checkout modal (beige `--warm` + deep slate `--slate`): plan, benefits, "Today: $0 / <date>: trial ends", full-width
+    "Start 7 Days Free" → confirmation "You're on Pro — free for 7 days … until <date>" → "Start packing" (full reload).
+  - During the trial: beige banner under the header ("Pro trial · N days left · ends <date> · Subscribe"); Account →
+    Plan & billing shows "Trial · N days left", a days-used progress bar, "Subscribe to Pro" (paywall with pay links) and
+    "Cancel trial" (ends it immediately, back to Free; nothing to bill). After 7 days → Free automatically, banner
+    "Your Pro trial ended. Your closet, trips and looks are safe. Keep Pro". Quotas during the trial = the plan's quotas.
+  - Kwop event `feature_used` {"detail":"Free trial"} when a trial starts.
+  - The plan cache in `lib/kwop.ts` lives on `globalThis`: Next bundles pages and server actions separately, so a module
+    Map existed twice and invalidating it from an action (trial start, cancel) did not reach the pages for up to 60 s.
 - **Cancellation grace period** (2026-11-03, owner: "when subscription is cancelled set the account to free after the paid
   month is over"). Kwop reports `paid:false` right after a cancel, so FitLook keeps its own record: table `subscriptions`
   (one row per user: plan_id, plan_name, status active|canceling|expired, paid_since, current_period_end, canceled_at;
@@ -188,6 +212,9 @@ of the app. The landing page still shows monthly prices.
       (paid → cancel dialog with date → still Pro, AI Matcher works → period end → Free, AI Matcher behind the paywall, closet
       kept; zero console errors) + RLS check (users cannot insert or read others' subscriptions) + e2e journey green with the
       real Kwop, deployed.
+- [x] 2026-11-03 7-day free trial: 7 unit tests + 3 UI passes (390/1280 px; visitor /pricing → signup → trial running →
+      Subscribe paywall → Cancel trial → Free; signed-in Free user → paywall → modal → confirmation → banner → 7 days later
+      → "trial ended" + Free, no second trial; zero console errors), RLS check, e2e journey green, deployed.
 - [x] Kwop checkout fixed on Kwop's side (2026-11-03): `https://kwop.io/fitlook/pay/1064|1065|1066?email=…` → 302 to a Whop
       checkout (`whop.com/checkout/ch_…`). A real payment → /dashboard?paid=1 round trip is still untested (needs a real card).
       2026-11-03: the owner reports a real payment went through. No FitLook account had a paid plan recorded yet at that

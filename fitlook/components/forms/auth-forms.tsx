@@ -20,15 +20,21 @@ function Submit({ pending, children }: { pending: boolean; children: React.React
   );
 }
 
-export function SignupForm({ plan }: { plan?: string }) {
+export function SignupForm({ plan, trial }: { plan?: string; trial?: boolean }) {
   const [state, action, pending] = useActionState(signUpAction, undefined);
   return (
     <form action={action} className="space-y-4">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">Pack your first look</h1>
-        <p className="mt-1 text-muted-foreground">
-          Free to start. No credit card.{plan ? ` You picked ${plan} — you can upgrade after your first look.` : ""}
-        </p>
+        <h1 className="text-3xl font-black tracking-tight">{trial ? `Start 7 days of ${plan || "Pro"} free` : "Pack your first look"}</h1>
+        {trial ? (
+          <p className="mt-2 rounded-2xl bg-warm px-4 py-3 text-sm text-slate">
+            <b>No charge today, cancel anytime.</b> No card needed — your {plan || "Pro"} trial starts as soon as you sign up.
+          </p>
+        ) : (
+          <p className="mt-1 text-muted-foreground">
+            Free to start. No credit card.{plan ? ` You picked ${plan} — you can upgrade after your first look.` : ""}
+          </p>
+        )}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>

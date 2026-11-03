@@ -2,7 +2,7 @@ import "server-only";
 import { after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planKeyFrom, type PlanKey } from "@/lib/plans";
-import { resolvePlan, type Resolved, type SubRow } from "@/lib/grace";
+import { applyTrial, resolvePlan, type Resolved, type SubRow, type TrialRow } from "@/lib/grace";
 
 // Everything Kwop lives here. KWOP_API is a server-only secret.
 const KWOP_API = (process.env.KWOP_API || "").replace(/\/$/, "");
@@ -10,7 +10,10 @@ const KWOP_API = (process.env.KWOP_API || "").replace(/\/$/, "");
 export type KwopPlan = { paid: boolean; plan: { id: number; name: string } | null; status?: string; until?: string | null };
 export type UserPlan = { key: PlanKey; name: string; paid: boolean; status: string | null; until: string | null; stale: boolean };
 
-const cache = new Map<string, { at: number; value: UserPlan }>();
+// One cache per server process, shared by pages and server actions (Next bundles them separately, so a plain module-level
+// Map would exist twice and invalidating it from an action would not reach the pages).
+const g = globalThis as typeof globalThis & { __fitlookPlanCache?: Map<string, { at: number; value: UserPlan }> };
+const cache = (g.__fitlookPlanCache ??= new Map<string, { at: number; value: UserPlan }>());
 const TTL = 60_000;
 
 async function kwopFetch(path: string, init?: RequestInit) {
@@ -43,8 +46,11 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
     };
     if (opts.userId) {
       const admin = createAdminClient();
-      const { data: row } = await admin.from("subscriptions").select("*").eq("user_id", opts.userId).maybeSingle<SubRow>();
-      resolved = resolvePlan(data, row ?? null);
+      const [{ data: row }, { data: trial }] = await Promise.all([
+        admin.from("subscriptions").select("*").eq("user_id", opts.userId).maybeSingle<SubRow>(),
+        admin.from("trials").select("*").eq("user_id", opts.userId).maybeSingle<TrialRow>(),
+      ]);
+      resolved = applyTrial(resolvePlan(data, row ?? null), trial ?? null);
       if (resolved.write) {
         await admin.from("subscriptions").upsert({ user_id: opts.userId, ...(row ?? {}), ...resolved.write, updated_at: new Date().toISOString() });
       }
@@ -52,8 +58,8 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
       await admin
         .from("profiles")
         .update({
-          last_plan_id: resolved.paid ? resolved.plan!.id : null,
-          last_plan_name: resolved.paid ? resolved.plan!.name : null,
+          last_plan_id: resolved.paid && resolved.status !== "trialing" ? resolved.plan!.id : null,
+          last_plan_name: resolved.paid && resolved.status !== "trialing" ? resolved.plan!.name : null,
           last_plan_checked_at: new Date().toISOString(),
         })
         .eq("id", opts.userId);
@@ -78,6 +84,10 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
         if (row && row.status !== "expired" && new Date(row.current_period_end) > new Date()) {
           return { key: planKeyFrom(row.plan_id, row.plan_name), name: shortName(row.plan_name), paid: true, status: row.status, until: row.current_period_end, stale: true };
         }
+        const { data: trial } = await admin.from("trials").select("*").eq("user_id", opts.userId).maybeSingle<TrialRow>();
+        if (trial && !trial.canceled_at && new Date(trial.ends_at) > new Date()) {
+          return { key: planKeyFrom(trial.plan_id, trial.plan_name), name: shortName(trial.plan_name), paid: true, status: "trialing", until: trial.ends_at, stale: true };
+        }
         const { data } = await admin.from("profiles").select("last_plan_id,last_plan_name").eq("id", opts.userId).single();
         if (data?.last_plan_id) {
           return { key: planKeyFrom(data.last_plan_id, data.last_plan_name), name: shortName(data.last_plan_name || "Paid"), paid: true, status: null, until: null, stale: true };
@@ -89,8 +99,12 @@ export async function getPlan(email: string, opts: { fresh?: boolean; userId?: s
 }
 
 /** Kwop names plans "FitLook Pro"; inside the app "Pro" reads better. */
-function shortName(name: string) {
+export function shortName(name: string) {
   return name.replace(/^fitlook\s+/i, "") || name;
+}
+
+export function invalidatePlanCache(email: string) {
+  cache.delete(email.trim().toLowerCase());
 }
 
 export function payLink(planId: number, email: string): string {

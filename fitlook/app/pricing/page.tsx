@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getSessionUser } from "@/lib/session";
 import { getPlan, track } from "@/lib/kwop";
 import { planCards } from "@/lib/pricing";
+import { getTrial, trialEligible } from "@/lib/trial";
 import { SiteFooter, SiteHeader } from "@/components/site";
 import { OutsideDialog, PaywallBody } from "@/components/paywall";
 
@@ -21,12 +22,15 @@ export default async function PricingPage() {
   }
   const plan = email ? await getPlan(email, { userId }) : null;
   if (email) track("paywall_view", email);
+  const trial = userId ? await getTrial(userId) : null;
+  const trialing = plan?.status === "trialing";
+  const cards = planCards(email, trialing ? "free" : plan?.key, { trial: Boolean(plan && userId && trialEligible(trial, plan)), visitorTrial: !email });
   return (
     <>
       <SiteHeader />
       <main>
         <OutsideDialog>
-          <PaywallBody plans={planCards(email, plan?.key)} />
+          <PaywallBody plans={cards} />
         </OutsideDialog>
         <p className="pb-12 text-center text-sm text-muted-foreground">
           {email ? (

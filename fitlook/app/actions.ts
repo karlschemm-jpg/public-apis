@@ -7,8 +7,9 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, getUsage, quotaLeft, consume, getSessionUser } from "@/lib/session";
-import { track, cancelSubscription } from "@/lib/kwop";
-import { nextPlan, PLANS } from "@/lib/plans";
+import { track, cancelSubscription, invalidatePlanCache } from "@/lib/kwop";
+import { trialEnd } from "@/lib/grace";
+import { nextPlan, PLANS, planKeyFrom } from "@/lib/plans";
 import { buildCapsule, planOutfits, type G, type TripInput } from "@/lib/matcher";
 import { aiEnabled, stylistNotes } from "@/lib/ai";
 import { exampleGarments, exampleTrip } from "@/lib/examples";
@@ -44,6 +45,15 @@ export async function signUpAction(_: FormState, form: FormData): Promise<FormSt
     await admin.from("profiles").upsert({ id: data.user.id, email, ...(plan ? { intended_plan: plan.slice(0, 30) } : {}) });
   }
   jar.delete("fl_plan");
+  if (data.user && jar.get("fl_trial")?.value === "1") {
+    const key = plan ? planKeyFrom(null, plan) : "pro";
+    const def = PLANS[key === "free" ? "pro" : key];
+    await createAdminClient()
+      .from("trials")
+      .insert({ user_id: data.user.id, plan_id: def.kwopId, plan_name: def.name, ends_at: trialEnd().toISOString() });
+    track("feature_used", email, "Free trial");
+  }
+  jar.delete("fl_trial");
   track("signup", email);
   redirect("/onboarding");
 }
@@ -354,6 +364,7 @@ export async function deleteOutfit(id: string) {
 export async function cancelSubscriptionAction(): Promise<{ message: string; manage_url?: string; error?: string; until?: string; plan?: string }> {
   const { user, plan } = await requireUser({ fresh: true });
   if (!plan.paid) return { message: "You're on the Free plan — nothing to cancel." };
+  if (plan.status === "trialing") return { message: "", error: "You're on a free trial — use “Cancel trial” instead." };
   if (plan.status === "canceling" && plan.until) {
     return { message: "Your subscription is already cancelled.", until: plan.until, plan: plan.name };
   }
@@ -365,6 +376,33 @@ export async function cancelSubscriptionAction(): Promise<{ message: string; man
     console.error("[kwop] cancel failed:", (err as Error).message);
     return { message: "", error: "We couldn't reach the billing service. Please try again in a minute." };
   }
+}
+
+// ---------- 7-DAY FREE TRIAL (no card) ----------------------------------------
+
+export async function startTrialAction(planKey: string): Promise<{ error?: string; plan?: string; ends?: string }> {
+  const key = z.enum(["starter", "pro", "global"]).safeParse(planKey);
+  if (!key.success) return { error: "Pick a plan." };
+  const { user, plan } = await requireUser({ fresh: true });
+  if (plan.paid) return { error: plan.status === "trialing" ? "Your free trial is already running." : "You already have a paid plan." };
+  const admin = createAdminClient();
+  const def = PLANS[key.data];
+  const ends = trialEnd();
+  // primary key on user_id = one trial per account, enforced by the database
+  const { error } = await admin.from("trials").insert({ user_id: user.id, plan_id: def.kwopId, plan_name: def.name, ends_at: ends.toISOString() });
+  if (error) return { error: error.code === "23505" ? "You've already used your free trial." : "Could not start your trial. Try again." };
+  invalidatePlanCache(user.email!);
+  track("feature_used", user.email!, "Free trial");
+  return { plan: def.name, ends: ends.toISOString() };
+}
+
+export async function cancelTrialAction(): Promise<{ error?: string; ok?: boolean }> {
+  const { user, plan } = await requireUser({ fresh: true });
+  if (plan.status !== "trialing") return { error: "There's no trial running." };
+  const { error } = await createAdminClient().from("trials").update({ canceled_at: new Date().toISOString() }).eq("user_id", user.id).is("canceled_at", null);
+  if (error) return { error: "Could not cancel. Try again." };
+  invalidatePlanCache(user.email!);
+  return { ok: true };
 }
 
 export async function deleteAccountAction(_: FormState, form: FormData): Promise<FormState> {

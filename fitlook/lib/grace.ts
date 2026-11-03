@@ -16,7 +16,7 @@ export type KwopAnswer = { paid: boolean; plan: { id: number; name: string } | n
 export type Resolved = {
   paid: boolean;
   plan: { id: number; name: string } | null;
-  status: "active" | "canceling" | "free";
+  status: "active" | "canceling" | "trialing" | "free";
   /** active → next renewal; canceling → last day of access; free → null */
   until: string | null;
   /** what to write back to the subscriptions row (null = nothing to write) */
@@ -73,4 +73,26 @@ export function resolvePlan(kwop: KwopAnswer, row: SubRow | null, now = new Date
 /** "December 1, 2026" */
 export function longDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" });
+}
+
+// ---------- 7-day free trial (no card; one per account) ----------
+
+export const TRIAL_DAYS = 7;
+
+export type TrialRow = { plan_id: number; plan_name: string; started_at: string; ends_at: string; canceled_at: string | null };
+
+/** A real subscription (or its grace period) always wins; otherwise an unexpired, uncancelled trial gives its plan. */
+export function applyTrial(r: Resolved, trial: TrialRow | null, now = new Date()): Resolved {
+  if (r.paid || !trial || trial.canceled_at) return r;
+  if (new Date(trial.ends_at) <= now) return r;
+  return { paid: true, plan: { id: trial.plan_id, name: trial.plan_name }, status: "trialing", until: new Date(trial.ends_at).toISOString(), write: r.write };
+}
+
+/** Whole days left, rounded up ("ends in 6 h" still reads "1 day left"). */
+export function daysLeft(untilIso: string, now = new Date()) {
+  return Math.max(0, Math.ceil((new Date(untilIso).getTime() - now.getTime()) / 864e5));
+}
+
+export function trialEnd(now = new Date()) {
+  return new Date(now.getTime() + TRIAL_DAYS * 864e5);
 }

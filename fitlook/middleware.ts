@@ -13,6 +13,9 @@ export async function middleware(request: NextRequest) {
     if (plan && /^[\w .-]{1,30}$/.test(plan)) {
       res.cookies.set("fl_plan", plan, { maxAge: 60 * 60 * 24 * 7, path: "/", sameSite: "lax", httpOnly: true });
     }
+    if (searchParams.get("trial") === "1") {
+      res.cookies.set("fl_trial", "1", { maxAge: 60 * 60 * 24 * 7, path: "/", sameSite: "lax", httpOnly: true });
+    }
     return res;
   };
 
