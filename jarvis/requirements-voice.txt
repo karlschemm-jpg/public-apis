@@ -1,0 +1,8 @@
+# 100% local voice: speech-to-text and text-to-speech run on your machine.
+-r requirements.txt
+faster-whisper>=1.1
+kokoro>=0.9
+sounddevice>=0.5
+numpy>=1.26
+# Kokoro needs espeak-ng on the system for some phonemes:
+#   macOS: brew install espeak-ng   ·   Debian/Ubuntu: sudo apt install espeak-ng

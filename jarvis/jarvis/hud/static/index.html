@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VAULT Command Center</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="logo" id="logo">VAULT</span>
+      <div>
+        <div class="brand-name" id="brandName">V.A.U.L.T.</div>
+        <div class="brand-sub" id="brandSub">Voice-Activated Unified Logic Terminal</div>
+      </div>
+    </div>
+    <div class="pills">
+      <span class="pill" id="pillLink"><i class="dot"></i>link</span>
+      <span class="pill" id="pillVoice"><i class="dot"></i>voice</span>
+      <span class="pill" id="pillModel">model</span>
+      <span class="clock" id="clock">--:--</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- Brain: skill tree -->
+    <section class="panel" id="brainPanel">
+      <h2>Brain <small>skills</small></h2>
+      <div id="skillTree" class="tree"></div>
+      <button class="ghost" id="syncBtn" title="Re-scan skills/ and link them into .claude/skills">⟳ sync skills</button>
+    </section>
+
+    <!-- Voice + console -->
+    <section class="panel center">
+      <div class="orb-wrap">
+        <canvas id="orb" width="560" height="560" aria-label="Voice visualiser"></canvas>
+        <div class="orb-state" id="orbState">standby</div>
+      </div>
+      <div class="route" id="routeLine">regex → local → haiku</div>
+      <div class="feed" id="feed" aria-live="polite"></div>
+      <form class="cmd" id="cmdForm" autocomplete="off">
+        <span class="prompt">&gt;</span>
+        <input id="cmdInput" placeholder="Type a command, or speak after the wake word…" aria-label="Command">
+        <label class="speak"><input type="checkbox" id="speakToggle"> speak</label>
+        <button type="submit">Send</button>
+        <button type="button" class="ghost" id="stopBtn" title="Stop speaking">■</button>
+      </form>
+    </section>
+
+    <!-- Metrics + memory -->
+    <section class="panel" id="rightPanel">
+      <h2>Metrics</h2>
+      <div class="tiles" id="tiles"></div>
+      <div class="tiers" id="tiers"></div>
+      <h2>Memory <small>obsidian vault</small></h2>
+      <canvas id="graph" width="360" height="220" aria-label="Vault link graph"></canvas>
+      <ul class="reports" id="reports"></ul>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

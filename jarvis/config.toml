@@ -1,0 +1,84 @@
+# ─────────────────────────────────────────────────────────────
+#  Your Own Jarvis — single config file.
+#  Fork + edit this file to reskin for any client.
+# ─────────────────────────────────────────────────────────────
+
+[brand]
+name        = "V.A.U.L.T."
+expansion   = "Voice-Activated Unified Logic Terminal"
+assistant   = "Jarvis"            # what the assistant calls itself
+owner       = "Boss"              # how it addresses you
+wake_words  = ["jarvis", "vault"] # spoken prefix that arms a command (empty list = always listening)
+accent      = "#22d3ee"           # HUD primary colour
+accent_2    = "#a78bfa"           # HUD secondary colour
+logo_text   = "VAULT"
+
+[paths]
+skills = "skills"       # canonical skill tree: skills/<branch>/<skill>/SKILL.md
+vault  = "vault"        # Obsidian vault = long-term memory
+reports_dir = "Reports" # relative to vault
+
+[brain]
+# "api"         → Anthropic SDK; injects ONLY the routed SKILL.md + linked notes (leanest)
+# "claude_code" → shells out to `claude -p` in this folder so Claude Code loads skills itself
+backend        = "api"
+model          = "claude-fable-5-1"   # Fable 5 family; "claude-fable-5" also works. Runs on any model.
+effort         = "medium"             # low | medium | high | xhigh | max
+max_tokens     = 16000
+refusal_fallback = true               # server-side fallback if the main model declines
+memory_notes   = 4                    # how many vault notes to pull in as context
+
+[router]
+# Tier 1: regex rules ([[router.rules]] below) — instant, free, offline.
+# Tier 2: a local model via Ollama — offline, ~100ms.
+# Tier 3: Claude Haiku — cloud, only when tiers 1–2 are unsure.
+local_model_enabled = true
+local_model         = "qwen2.5:3b"
+ollama_url          = "http://localhost:11434"
+local_min_confidence = 0.7
+haiku_enabled       = true
+haiku_model         = "claude-haiku-5-5"
+default_skill       = "general"       # used when nothing matches
+
+[[router.rules]]
+pattern = '''^(what('s| is) the )?time\b|\bwhat time is it\b'''
+action  = "builtin:time"
+
+[[router.rules]]
+pattern = '\b(system|cpu|memory|disk) (status|usage|check)\b'
+action  = "skill:ops/system-status"
+
+[[router.rules]]
+pattern = '\b(daily|morning) (brief|briefing|report)\b'
+action  = "skill:ops/daily-brief"
+
+[[router.rules]]
+pattern = '^(note|remember|capture)( that)?\b'
+action  = "skill:memory/capture"
+
+[[router.rules]]
+pattern = '\b(what do (i|we) know about|recall|look up my notes on)\b'
+action  = "skill:memory/recall"
+
+[[router.rules]]
+pattern = '^(stop|cancel|never ?mind|quiet)\b'
+action  = "builtin:stop"
+
+[voice]
+enabled        = true
+# STT — faster-whisper, runs on your machine
+stt_model      = "base.en"      # tiny.en | base.en | small.en | medium.en | large-v3
+stt_device     = "auto"         # auto | cpu | cuda
+stt_compute    = "int8"
+sample_rate    = 16000
+silence_ms     = 800            # end-of-utterance after this much silence
+energy_threshold = 0.012        # RMS gate for speech detection
+max_utterance_s  = 20
+# TTS — Kokoro, runs on your machine
+tts_voice      = "af_heart"
+tts_lang       = "a"            # a = American English, b = British English
+tts_speed      = 1.05
+
+[hud]
+host = "127.0.0.1"
+port = 8765

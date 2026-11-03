@@ -1,0 +1,2 @@
+# Core (HUD + brain). The HUD itself is stdlib-only.
+anthropic>=1.0
