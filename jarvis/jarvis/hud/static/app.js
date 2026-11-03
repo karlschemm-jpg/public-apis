@@ -10,7 +10,9 @@
   // ── boot ─────────────────────────────────────────────────────────────
   async function load() {
     try {
-      state = await (await fetch("/api/state")).json();
+      const r = await fetch("/api/state");
+      if (r.status === 401) return location.assign("/");
+      state = await r.json();
       render();
       setPill("pillLink", true, "link");
     } catch {
@@ -138,13 +140,16 @@
     try {
       const r = await fetch("/api/command", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, skill: forcedSkill, speak: $("speakToggle").checked }),
+        body: JSON.stringify({ text, skill: forcedSkill }),
       });
-      if (!r.ok) say("error", (await r.json()).error || r.statusText, "", "err");
+      if (r.status === 401) return location.assign("/");
+      const data = await r.json();
+      if (!r.ok) say("error", data.error || r.statusText, "", "err");
+      else if ($("speakToggle").checked && data.text) window.VAULT_VOICE?.speak(data.text);
     } catch (err) { say("error", String(err), "", "err"); }
     forcedSkill = null; renderSkills();
   });
-  $("stopBtn").onclick = () => fetch("/api/stop", { method: "POST" });
+  $("stopBtn").onclick = () => { window.VAULT_VOICE?.stop(); fetch("/api/stop", { method: "POST" }); };
   $("syncBtn").onclick = async () => {
     const r = await (await fetch("/api/skills/sync", { method: "POST" })).json();
     say("system", `Linked ${r.synced} skills into .claude/skills and refreshed the Skill Map note.`);
@@ -249,6 +254,16 @@
   const tick = () => { $("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); };
   tick(); setInterval(tick, 1000);
   setInterval(async () => { if (state) { try { state.metrics = (await (await fetch("/api/state")).json()).metrics; renderMetrics(); } catch {} } }, 10000);
+
+  // Hooks for voice.js (device microphone + playback).
+  window.VAULT = {
+    say,
+    setMode: (m) => { mode = m; },
+    bumpLevel: (l) => { level = Math.max(level, l); },
+    get owner() { return state?.brand.owner || "Boss"; },
+    get assistant() { return state?.brand.assistant || "Jarvis"; },
+    get wakeWords() { return state?.brand.wake_words || []; },
+  };
 
   load().then(drawGraph);
   connect();

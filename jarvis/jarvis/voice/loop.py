@@ -2,26 +2,28 @@
 
 from __future__ import annotations
 
-import re
 import threading
 import time
 
 from ..brain import Brain
 from ..events import EventBus
+from .audio import VoiceService
+from .wake import strip_wake, wake_pattern
 
 FOLLOW_UP_S = 8.0  # after a reply, no wake word needed for this long
 
 
 class VoiceLoop:
-    def __init__(self, cfg: dict, brain: Brain, bus: EventBus) -> None:
+    def __init__(self, cfg: dict, brain: Brain, bus: EventBus, service: VoiceService) -> None:
         from .stt import Ears
         from .tts import Mouth
 
         self.cfg, self.brain, self.bus = cfg, brain, bus
-        self.ears = Ears(cfg, bus)
-        self.mouth = Mouth(cfg, bus)
-        words = [re.escape(w) for w in cfg["brand"].get("wake_words", [])]
-        self.wake = re.compile(rf"^\W*(hey\s+|ok(ay)?\s+)?({'|'.join(words)})\b[\s,.!?]*", re.I) if words else None
+        self.ears = Ears(cfg, bus, service.stt)
+        if service.tts is None:
+            raise ImportError("kokoro", name="kokoro")
+        self.mouth = Mouth(cfg, bus, service.tts)
+        self.wake = wake_pattern(cfg["brand"].get("wake_words", []))
         self.stop_event = threading.Event()
         self._open_until = 0.0
         q = bus.subscribe()
@@ -33,10 +35,7 @@ class VoiceLoop:
                 self.mouth.stop()
 
     def _strip_wake(self, text: str) -> str | None:
-        if not self.wake or time.monotonic() < self._open_until:
-            return self.wake.sub("", text) if self.wake else text
-        m = self.wake.match(text)
-        return text[m.end():] if m else None
+        return strip_wake(text, self.wake, required=time.monotonic() >= self._open_until)
 
     def run(self) -> None:
         self.bus.publish("voice", state="online", stt=self.cfg["voice"]["stt_model"],

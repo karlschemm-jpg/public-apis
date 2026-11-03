@@ -48,8 +48,30 @@ python -m jarvis route "what do we know about Acme"    # see which tier/skill pi
 python -m jarvis skills                                # list the skill tree
 python -m jarvis skills sync                           # link skills into .claude/skills + update vault Skill Map
 python -m jarvis new-skill sales/proposal "Draft a proposal from discovery notes"
-python -m pytest tests                                 # 21 tests, no network or mic needed
+python -m pytest tests                                 # 35 tests, no network or mic needed
 ```
+
+## Use it on your iPad
+
+The iPad becomes Jarvis's microphone, speaker and screen. The computer still does the work: speech recognition (faster-whisper), the voice (Kokoro) and the Claude calls all run on it, so keep it on and on the same Wi-Fi.
+
+1. On the computer, install the voice packages (step above) and run:
+   ```bash
+   python -m jarvis run --ipad
+   ```
+   It prints an address like `https://192.168.1.20:8765/?key=…` and the access key. Run `pip install qrcode` beforehand to also get a QR code you can scan with the iPad camera.
+2. On the iPad, open that address in Safari. Safari warns that the connection isn't private, because the certificate was made on your computer rather than bought from a certificate authority. Tap **Show Details → visit this website → Visit Website**. Safari only allows the microphone on HTTPS pages, which is why iPad mode uses one.
+3. Tap **Tap to talk**, allow the microphone, and speak. It stops listening when you pause.
+   - **Hands-free:** tick *hands-free* and it keeps listening, answering only lines that start with "Jarvis".
+   - **Home screen:** Share → **Add to Home Screen** makes it open full-screen like an app.
+
+What `--ipad` changes:
+- The dashboard is reachable from your Wi-Fi (`0.0.0.0`) over HTTPS.
+- It is locked with an access key. The key is saved in `.jarvis/access_key` so the iPad stays logged in; delete that file to make a new one, or set `[hud] access_key` in `config.toml`.
+- The computer's own mic is not used, so you're not talking to two microphones at once.
+- If Kokoro isn't installed on the computer, the iPad's built-in voice reads the replies instead.
+
+Only use this on a network you trust: anyone with the key on the same Wi-Fi can use Jarvis. To use it away from home, put both devices on a private network such as Tailscale rather than opening a port on your router.
 
 ## Step 1 — The Brain (skill architecture)
 
@@ -123,7 +145,7 @@ jarvis/
   vault/                 ← Memory (Obsidian)
   jarvis/
     router.py brain.py memory.py skills.py metrics.py events.py cli.py
-    voice/  stt.py tts.py loop.py
-    hud/    server.py static/{index.html,app.js,style.css}
+    voice/  stt.py tts.py loop.py audio.py wake.py
+    hud/    server.py net.py static/{index.html,app.js,voice.js,style.css}
   tests/
 ```

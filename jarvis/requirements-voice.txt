@@ -6,3 +6,5 @@ sounddevice>=0.5
 numpy>=1.26
 # Kokoro needs espeak-ng on the system for some phonemes:
 #   macOS: brew install espeak-ng   ·   Debian/Ubuntu: sudo apt install espeak-ng
+# Optional: show a QR code for the iPad address when running `python -m jarvis run --ipad`
+# qrcode>=7.4

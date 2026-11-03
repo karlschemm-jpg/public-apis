@@ -80,5 +80,8 @@ tts_lang       = "a"            # a = American English, b = British English
 tts_speed      = 1.05
 
 [hud]
-host = "127.0.0.1"
+host = "127.0.0.1"    # `run --ipad` switches this to 0.0.0.0 (reachable from your Wi-Fi)
 port = 8765
+https = false         # `run --ipad` turns this on: iPad Safari only allows the mic on HTTPS pages
+access_key = ""       # HUD password. Empty = a random key is made and saved in .jarvis/access_key
+                      # (only enforced when the HUD is reachable from other devices)
