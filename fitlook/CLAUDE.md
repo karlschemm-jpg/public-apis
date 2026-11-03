@@ -54,7 +54,14 @@ How it works: 1. Snap clothes · 2. Add trip details · 3. Get looks.
 
 **What FitLook copies (structure/flow only, nothing else):** Acloset's flow: short style quiz → first item with
 automatic background removal (first result in 3 steps) → freemium cap on items → 3 paid tiers where each adds capacity + AI depth.
-Landing section order: result headline + product working → problem → solution → how it works (3 steps) → plans → FAQ → final CTA.
+Landing section order (changed 2026-11-03 at the owner's request "show the plans higher, right under the headline"):
+result headline + product working → **plans** (`#pricing`, directly under the hero in the DOM and on screen) → problem →
+solution → how it works (3 steps) → FAQ → final CTA. The plans block moved unchanged (same heading, cards, prices, benefits,
+"Start with <plan>" buttons → `/signup?plan=<Plan>` → plan kept in the `fl_plan` cookie → `profiles.intended_plan` → paywall
+with that plan highlighted right after the first result → Kwop checkout). Hero bottom padding reduced (pb-16 → pb-10) and the
+plans section uses pt-6/lg:pt-8 so it reads as the continuation of the headline. Cards: 3 columns from md, stacked on phone.
+Conflict to settle with the owner: the request template's "funnel rules" (no prices on the landing page, price per day,
+yearly plans) are not in this file and were not applied; moving priced cards higher makes the conflict more visible.
 
 ## Kwop = payments, plans, owner dashboard (no Whop code here)
 - `KWOP_API` (server only) = `https://kwop.io/api/v2/app/<key>` — in `.env.local` and Vercel env.
@@ -159,6 +166,9 @@ of the app. The landing page still shows monthly prices.
       errors), end-to-end journey green with a Stats step, deployed.
 - [x] 2026-11-03 Motion system: verified 3 passes (390 px + 1280 px, normal + reduced motion: CLS 0, hover 1.05 without moving
       neighbors, dialogs in/out, page fade, zero console errors), end-to-end journey green, deployed.
+- [x] 2026-11-03 Plans moved under the hero: verified 3 passes (390 px + 1280 px: DOM + visual order, 3-column vs stacked,
+      all 3 CTAs → signup with the plan kept, content identical to the previous live version, zero console errors),
+      end-to-end journey green, deployed.
 - [ ] Kwop checkout `https://kwop.io/fitlook/pay/<id>` returns Cloudflare 502 "Host Error" from Kwop's server (all 3 plans,
       before and after connect). The app's pay links are correct; re-test the pay → /dashboard?paid=1 and cancel → /pricing
       round trip once Kwop fixes it.

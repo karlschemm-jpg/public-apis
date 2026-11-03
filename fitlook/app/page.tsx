@@ -32,7 +32,7 @@ export default function Landing() {
       <SiteHeader />
       <main>
         {/* HERO: the result + the product working */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:px-6 lg:grid-cols-2 lg:pt-20">
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-10 sm:px-6 lg:grid-cols-2 lg:pt-20">
           <div className="min-w-0">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-bold">
               <Sparkles className="size-3.5" /> Your AI stylist for every trip
@@ -89,6 +89,15 @@ export default function Landing() {
             <div className="absolute -bottom-5 -left-3 flex items-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-sm font-bold text-background shadow-xl">
               <Luggage className="size-5 text-primary" /> Fits in one carry-on
             </div>
+          </div>
+        </section>
+
+        {/* PLANS — directly under the hero (2026-11-03) */}
+        <section id="pricing" aria-labelledby="plans-title" className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 lg:pt-8">
+          <h2 id="plans-title" className="reveal text-3xl font-black tracking-tight sm:text-4xl">Start free. Upgrade when you’re hooked.</h2>
+          <p className="mt-2 text-muted-foreground">Every account starts free with 3 Closet Digitizer scans. Cancel anytime.</p>
+          <div className="mt-10">
+            <PlanCards plans={cards} cta="Start with" />
           </div>
         </section>
 
@@ -159,14 +168,6 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* PLANS */}
-        <section id="pricing" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="reveal text-3xl font-black tracking-tight sm:text-4xl">Start free. Upgrade when you’re hooked.</h2>
-          <p className="mt-2 text-muted-foreground">Every account starts free with 3 Closet Digitizer scans. Cancel anytime.</p>
-          <div className="mt-10">
-            <PlanCards plans={cards} cta="Start with" />
-          </div>
-        </section>
 
         {/* FAQ */}
         <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
