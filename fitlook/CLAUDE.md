@@ -107,7 +107,22 @@ Stats page accents (requested 2026-11-03): frosted glass cards (`bg-card/75 back
 neutral backdrop (`--warm`) with soft terracotta / sage / lime blurs. Tokens `--terracotta` (#a8492a light, #ec9a77 dark) and
 `--sage` (#47634a light, #a3c4a0 dark) are used for trend icons (sage = up, terracotta = down), bars and the trophy only; lime
 stays the brand color. All text ≥ 5.1:1 contrast (WCAG AA) in both modes, worst case measured on glass over a terracotta blur.
-Motion: `.animate-fade-up` with a 70 ms stagger per card; `prefers-reduced-motion: reduce` turns all keyframe animations off.
+**Motion system** (2026-11-03, all in `app/globals.css`; one timing: 200 ms, `--ease` = cubic-bezier(0.4,0,0.2,1)).
+Only `scale`/`translate`/opacity/colors animate, never width/height/margins, so there is no layout shift (measured CLS 0.000).
+- `.tap` — every button and button-like link (built into `components/ui/button.tsx`): hover scale 1.05 (only on devices that
+  can hover, so phones don't get "stuck" hovers), press scale 0.97 in 80 ms. Use it on any new CTA.
+- `.lift` — clickable cards (trip cards, garments, plan cards, onboarding answers, packing/suitcase tiles, dashboard steps):
+  hover scale 1.02 + soft shadow (1.05 is too big for large cards).
+- `.reveal` — scroll fade-up (16 px) via CSS scroll-driven animation (`animation-timeline: view()`), no JavaScript: content is
+  visible by default and in browsers without support, and anything on screen at load is already past its entry range, so
+  nothing ever renders late. Used on landing headings/cards/FAQ/final CTA, plan cards, trip cards, garment cards, day looks.
+- `.page-in` — 220 ms fade-up of the page content on every in-app navigation (`app/(app)/template.tsx`).
+- Dialogs: `.dialog-overlay` fades, `.dialog-content` fades + scales from 0.96, the full-screen paywall `.dialog-sheet` slides
+  up 24 px; all animate out on close (Radix waits for the exit animation). FAQ answers fade in when opened.
+  FitLook has no custom dropdown menus: selects are native (OS-animated).
+- `.animate-fade-up` (Stats cards, 70 ms stagger) and `.animate-pop` (success moment) are unchanged.
+- `prefers-reduced-motion: reduce`: every animation and transition is cut to 0.01 ms, hover/press scaling is off, reveals
+  are off. Colors still change instantly so feedback stays visible.
 Note: the owner's 2026-11-03 request referred to a "verification loop", "funnel rules" (no prices on the landing page, price per
 day, yearly plans) and terracotta/sage as "signature" colors; none of these were in this file. They were not applied to the rest
 of the app. The landing page still shows monthly prices.
@@ -142,6 +157,8 @@ of the app. The landing page still shows monthly prices.
       https://kwop.io/fitlook/app → 302 to the app; the Kwop page buttons now link to `<app>/signup?plan=…`.
 - [x] 2026-11-03 User Stats page: verified 3 passes (390 px + 1280 px, light + dark, reduced motion, new user, zero console
       errors), end-to-end journey green with a Stats step, deployed.
+- [x] 2026-11-03 Motion system: verified 3 passes (390 px + 1280 px, normal + reduced motion: CLS 0, hover 1.05 without moving
+      neighbors, dialogs in/out, page fade, zero console errors), end-to-end journey green, deployed.
 - [ ] Kwop checkout `https://kwop.io/fitlook/pay/<id>` returns Cloudflare 502 "Host Error" from Kwop's server (all 3 plans,
       before and after connect). The app's pay links are correct; re-test the pay → /dashboard?paid=1 and cancel → /pricing
       round trip once Kwop fixes it.

@@ -54,7 +54,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
                 </li>
               ))}
             </ul>
-            <Link href="/wardrobe" className="mt-5 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-bold text-background">
+            <Link href="/wardrobe" className="tap mt-5 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-bold text-background">
               Keep digitizing <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -85,7 +85,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
             <div className="font-black">Ready to pack your whole closet?</div>
             <div className="text-sm opacity-70">Starter gives you 50 items and 2 trips a month, from $5.</div>
           </div>
-          <UpgradeButton className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label="See plans" />
+          <UpgradeButton className="tap rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label="See plans" />
         </div>
       )}
 
@@ -93,7 +93,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         <h2 className="mb-3 text-xl font-black">Your carry-on in 3 steps</h2>
         <div className="grid gap-3 sm:grid-cols-3">
           {steps.map((s, i) => (
-            <Link key={s.href} href={s.href} className="group flex items-center gap-3 rounded-3xl border border-border bg-card p-4 hover:border-foreground">
+            <Link key={s.href} href={s.href} className="lift group flex items-center gap-3 rounded-3xl border border-border bg-card p-4 hover:border-foreground">
               <span className={`grid size-10 shrink-0 place-items-center rounded-full font-black ${s.done ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
                 {s.done ? <Check className="size-5" /> : i + 1}
               </span>
@@ -112,7 +112,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         {trips?.length ? (
           <div className="grid gap-3 sm:grid-cols-3">
             {trips.map((t) => (
-              <Link key={t.id} href={`/trips/${t.id}`} className="rounded-3xl border border-border bg-card p-5 hover:border-foreground">
+              <Link key={t.id} href={`/trips/${t.id}`} className="lift rounded-3xl border border-border bg-card p-5 hover:border-foreground">
                 <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{TRIP_LABEL[t.trip_type as TripType]}</div>
                 <div className="mt-1 text-lg font-black">{t.destination}</div>
                 <div className="text-sm text-muted-foreground">{formatDate(t.start_date)} · {t.days} days</div>

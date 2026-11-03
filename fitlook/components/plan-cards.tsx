@@ -12,7 +12,7 @@ export function PlanCards({ plans, highlight = "pro", cta = "Get" }: { plans: Pl
           <div
             key={p.key}
             className={cn(
-              "relative flex flex-col rounded-3xl border-2 p-6 transition",
+              "lift reveal relative flex flex-col rounded-3xl border-2 p-6",
               hot ? "border-foreground bg-foreground text-background md:-translate-y-2 shadow-xl" : "border-border bg-card"
             )}
           >
@@ -41,7 +41,7 @@ export function PlanCards({ plans, highlight = "pro", cta = "Get" }: { plans: Pl
               <a
                 href={p.href}
                 className={cn(
-                  "block rounded-full py-3 text-center text-sm font-bold transition active:scale-[0.98]",
+                  "tap block rounded-full py-3 text-center text-sm font-bold",
                   hot ? "bg-primary text-primary-foreground hover:brightness-95" : "bg-foreground text-background hover:opacity-90"
                 )}
               >

@@ -48,7 +48,7 @@ export default async function StatsPage() {
       {stats.starter && (
         <div className={cn(glass, "animate-fade-up mb-3 flex flex-wrap items-center justify-between gap-3 p-4")} style={delay()}>
           <p className="text-sm font-semibold">Your numbers start with your first real piece.</p>
-          <Link href="/wardrobe" className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground hover:brightness-95">
+          <Link href="/wardrobe" className="tap inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground hover:brightness-95">
             <Camera className="size-4" /> Snap a piece
           </Link>
         </div>

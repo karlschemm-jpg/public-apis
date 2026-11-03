@@ -15,7 +15,7 @@ export function SiteHeader() {
             Log in
           </Link>
           <ThemeToggle />
-          <Link href="/signup" className="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95">
+          <Link href="/signup" className="tap rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95">
             Start free
           </Link>
         </nav>

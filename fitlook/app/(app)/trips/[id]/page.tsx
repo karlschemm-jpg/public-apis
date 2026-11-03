@@ -60,7 +60,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
           </div>
-          <Link href={`/suitcase?trip=${trip.id}`} className="rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground">Open suitcase</Link>
+          <Link href={`/suitcase?trip=${trip.id}`} className="tap rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground">Open suitcase</Link>
         </div>
       </section>
 

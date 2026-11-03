@@ -229,7 +229,7 @@ function GarmentCard({ g, onEdit, onDeleted }: { g: GarmentView; onEdit: () => v
   const [pending, start] = useTransition();
   const [err, setErr] = useState(false);
   return (
-    <div className={cn("group overflow-hidden rounded-3xl border border-border bg-card", pending && "opacity-50")}>
+    <div className={cn("lift reveal group overflow-hidden rounded-3xl border border-border bg-card", pending && "opacity-50")}>
       <div className="checker relative grid aspect-square place-items-center p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={g.image_url} alt={g.name} className="max-h-full max-w-full object-contain drop-shadow-lg" loading="lazy" />

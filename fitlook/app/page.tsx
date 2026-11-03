@@ -18,7 +18,7 @@ function StartFree({ className = "" }: { className?: string }) {
   return (
     <Link
       href="/signup"
-      className={`inline-flex h-13 items-center gap-2 rounded-full bg-primary px-7 text-base font-black text-primary-foreground shadow-[0_8px_30px_-8px_#c8ff3d] transition hover:brightness-95 active:scale-[0.98] ${className}`}
+      className={`tap inline-flex h-13 items-center gap-2 rounded-full bg-primary px-7 text-base font-black text-primary-foreground shadow-[0_8px_30px_-8px_#c8ff3d] hover:brightness-95 ${className}`}
     >
       Start free <ArrowRight className="size-5" />
     </Link>
@@ -95,14 +95,14 @@ export default function Landing() {
         {/* PROBLEM */}
         <section className="border-y border-border bg-muted/50">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Sound familiar?</h2>
+            <h2 className="reveal max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Sound familiar?</h2>
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {[
                 ["You overpack “just in case”", "Half the suitcase comes home unworn — and you paid the checked-bag fee for it."],
                 ["Hotel-room outfit panic", "Every morning: clothes on the bed, 30 minutes gone, still nothing goes together."],
                 ["“Wait, did I pack that?”", "You can’t remember what you brought, so you buy it again at the airport."],
               ].map(([t, d]) => (
-                <div key={t} className="rounded-3xl bg-card p-6">
+                <div key={t} className="reveal rounded-3xl bg-card p-6">
                   <X className="mb-3 size-6 rounded-full bg-foreground p-1 text-background" />
                   <div className="text-lg font-bold">{t}</div>
                   <p className="mt-2 text-muted-foreground">{d}</p>
@@ -114,7 +114,7 @@ export default function Landing() {
 
         {/* SOLUTION */}
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Your closet, your trip, one smart stylist.</h2>
+          <h2 className="reveal max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Your closet, your trip, one smart stylist.</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {[
               [Camera, "Closet Digitizer", "Upload a photo, the background disappears instantly. Your clothes, clean and ready to mix."],
@@ -124,7 +124,7 @@ export default function Landing() {
             ].map(([Icon, t, d]) => {
               const I = Icon as typeof Camera;
               return (
-                <div key={t as string} className="rounded-3xl border border-border bg-card p-6">
+                <div key={t as string} className="reveal lift rounded-3xl border border-border bg-card p-6">
                   <div className="mb-4 grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground">
                     <I className="size-6" />
                   </div>
@@ -139,14 +139,14 @@ export default function Landing() {
         {/* HOW IT WORKS */}
         <section className="bg-foreground text-background">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="text-3xl font-black tracking-tight sm:text-4xl">How it works</h2>
+            <h2 className="reveal text-3xl font-black tracking-tight sm:text-4xl">How it works</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-3">
               {[
                 ["Snap clothes", "Take quick photos of your favorite pieces. We clean them up instantly."],
                 ["Add trip details", "Where you’re going, how long, and the weather forecast."],
                 ["Get looks", "Your complete day-by-day outfit schedule — and a packing list to match."],
               ].map(([t, d], i) => (
-                <div key={t}>
+                <div key={t} className="reveal">
                   <div className="mb-3 grid size-12 place-items-center rounded-full bg-primary text-xl font-black text-primary-foreground">{i + 1}</div>
                   <div className="text-xl font-black">{t}</div>
                   <p className="mt-2 opacity-70">{d}</p>
@@ -161,7 +161,7 @@ export default function Landing() {
 
         {/* PLANS */}
         <section id="pricing" className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Start free. Upgrade when you’re hooked.</h2>
+          <h2 className="reveal text-3xl font-black tracking-tight sm:text-4xl">Start free. Upgrade when you’re hooked.</h2>
           <p className="mt-2 text-muted-foreground">Every account starts free with 3 Closet Digitizer scans. Cancel anytime.</p>
           <div className="mt-10">
             <PlanCards plans={cards} cta="Start with" />
@@ -170,8 +170,8 @@ export default function Landing() {
 
         {/* FAQ */}
         <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
-          <h2 className="text-3xl font-black tracking-tight">Questions</h2>
-          <div className="mt-6 divide-y divide-border rounded-3xl border border-border bg-card">
+          <h2 className="reveal text-3xl font-black tracking-tight">Questions</h2>
+          <div className="reveal mt-6 divide-y divide-border rounded-3xl border border-border bg-card">
             {[
               ["Do I need a credit card to try it?", "No. Sign up with your email and start digitizing your closet for free."],
               ["What photos work best?", "Lay the item flat on a plain surface — a bed, a floor, a wall. Good light helps. The background is removed in seconds."],
@@ -191,10 +191,10 @@ export default function Landing() {
 
         {/* FINAL CTA */}
         <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-          <div className="rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground">
+          <div className="reveal rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground">
             <h2 className="text-4xl font-black tracking-tight sm:text-5xl">Your next trip, one bag lighter.</h2>
             <p className="mx-auto mt-3 max-w-md opacity-80">Snap 3 pieces now and watch your first look come together.</p>
-            <Link href="/signup" className="mt-8 inline-flex h-13 items-center gap-2 rounded-full bg-foreground px-7 text-base font-black text-background hover:opacity-90">
+            <Link href="/signup" className="tap mt-8 inline-flex h-13 items-center gap-2 rounded-full bg-foreground px-7 text-base font-black text-background hover:opacity-90">
               Start free <ArrowRight className="size-5" />
             </Link>
           </div>

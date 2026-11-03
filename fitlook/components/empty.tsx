@@ -5,7 +5,7 @@ export function Empty({ text, cta, href, children }: { text: string; cta?: strin
     <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border-2 border-dashed border-border px-6 py-14 text-center">
       <p className="max-w-xs text-muted-foreground">{text}</p>
       {cta && href && (
-        <Link href={href} className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground hover:brightness-95">
+        <Link href={href} className="tap rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground hover:brightness-95">
           {cta}
         </Link>
       )}

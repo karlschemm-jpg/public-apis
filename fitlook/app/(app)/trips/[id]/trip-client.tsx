@@ -92,7 +92,7 @@ export function PackingPicker({ tripId, garments, inBag }: { tripId: string; gar
               key={g.id}
               onClick={() => toggle(g.id)}
               aria-pressed={on}
-              className={cn("relative overflow-hidden rounded-2xl border-2 text-left transition", on ? "border-foreground" : "border-border opacity-60 hover:opacity-100")}
+              className={cn("lift relative overflow-hidden rounded-2xl border-2 text-left", on ? "border-foreground" : "border-border opacity-60 hover:opacity-100")}
             >
               <div className="checker grid aspect-square place-items-center p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

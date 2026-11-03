@@ -23,7 +23,7 @@ export default async function AccountPage() {
         </form>
       </PageTitle>
 
-      <Link href="/profile" className="flex items-center gap-3 rounded-3xl border border-border bg-card p-5 hover:border-foreground">
+      <Link href="/profile" className="flex items-center gap-3 lift rounded-3xl border border-border bg-card p-5 hover:border-foreground">
         <User className="size-5" />
         <span className="font-bold">Profile & style answers</span>
       </Link>
@@ -37,7 +37,7 @@ export default async function AccountPage() {
               {plan.paid ? `$${def.price}/month${plan.until ? ` · renews or ends ${new Date(plan.until).toLocaleDateString("en-US")}` : ""}${plan.status ? ` · ${plan.status}` : ""}` : "Free forever. Upgrade anytime."}
             </div>
           </div>
-          {next && <UpgradeButton className="rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label={`Upgrade to ${next.name}`} />}
+          {next && <UpgradeButton className="tap rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label={`Upgrade to ${next.name}`} />}
         </div>
         <ul className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
           <li className="rounded-2xl bg-muted p-3"><b>{def.key === "free" ? `${usage.digitize}/${def.digitize}` : `${usage.items}/${def.items}`}</b><br />{def.key === "free" ? "free scans" : "closet items"}</li>

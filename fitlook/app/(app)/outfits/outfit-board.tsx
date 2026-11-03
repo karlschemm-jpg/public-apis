@@ -78,7 +78,7 @@ function DayCard({ o, byId, garments }: { o: OutfitRow; byId: Map<string, Garmen
   const [pending, start] = useTransition();
   const filled = SLOTS.filter((s) => o[s.key]);
   return (
-    <div className={`w-[78vw] shrink-0 snap-center rounded-3xl border border-border bg-card p-4 sm:w-auto ${pending ? "opacity-60" : ""}`}>
+    <div className={`reveal w-[78vw] shrink-0 snap-center rounded-3xl border border-border bg-card p-4 sm:w-auto ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-center justify-between">
         <div className="text-lg font-black">Day {o.day_index + 1}</div>
         <div className="flex gap-1">

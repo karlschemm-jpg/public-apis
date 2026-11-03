@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { user, profile, plan } = await requireUser();
   if (!profile.onboarding_done) redirect("/onboarding");
   const free = plan.key === "free";
-  const upgradeCls = "inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground hover:brightness-95";
+  const upgradeCls = "tap inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground hover:brightness-95";
 
   return (
     <PaywallProvider plans={planCards(user.email!, plan.key)}>

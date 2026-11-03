@@ -27,7 +27,7 @@ export default async function TripsPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {trips.map((t) => (
-            <Link key={t.id} href={`/trips/${t.id}`} className="rounded-3xl border border-border bg-card p-5 transition hover:border-foreground">
+            <Link key={t.id} href={`/trips/${t.id}`} className="lift reveal rounded-3xl border border-border bg-card p-5 hover:border-foreground">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{TRIP_LABEL[t.trip_type]}</span>
                 {t.is_example && <Badge tone="ink">Example</Badge>}

@@ -108,7 +108,7 @@ export function Onboarding({ initial }: { initial: Partial<Record<Field, string 
                 onClick={() => choose(o.value)}
                 disabled={saving || finishing}
                 className={cn(
-                  "flex items-center gap-4 rounded-3xl border-2 p-5 text-left transition hover:border-foreground active:scale-[0.98] disabled:opacity-60",
+                  "lift flex items-center gap-4 rounded-3xl border-2 p-5 text-left hover:border-foreground disabled:opacity-60",
                   selected ? "border-foreground bg-primary text-primary-foreground" : "border-border bg-card"
                 )}
               >

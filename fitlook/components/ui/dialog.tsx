@@ -13,13 +13,13 @@ export const DialogDescription = DialogPrimitive.Description;
 export function DialogContent({ className, children, full, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { full?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm data-[state=open]:animate-in" />
+      <DialogPrimitive.Overlay className="dialog-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
       <DialogPrimitive.Content
         className={cn(
           "fixed z-50 bg-background text-foreground shadow-2xl outline-none",
           full
-            ? "inset-0 overflow-y-auto"
-            : "left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-border p-6",
+            ? "dialog-sheet inset-0 overflow-y-auto"
+            : "dialog-content left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-border p-6",
           className
         )}
         {...props}

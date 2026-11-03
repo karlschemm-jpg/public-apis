@@ -76,7 +76,7 @@ export function SuitcaseBoard({ tripId, items: initial, essentials }: { tripId: 
                   key={it.id}
                   onClick={() => toggle(it)}
                   aria-pressed={it.packed}
-                  className={cn("relative w-36 shrink-0 snap-start overflow-hidden rounded-2xl border-2 text-left transition", it.packed ? "border-foreground" : "border-border")}
+                  className={cn("lift relative w-36 shrink-0 snap-start overflow-hidden rounded-2xl border-2 text-left", it.packed ? "border-foreground" : "border-border")}
                 >
                   <div className={cn("checker grid aspect-square place-items-center p-3", it.packed && "opacity-50")}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
