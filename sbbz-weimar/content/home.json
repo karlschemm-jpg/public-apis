@@ -1,0 +1,111 @@
+{
+ "claim": [
+  "Staatliches Berufsbildungszentrum Weimar",
+  "Kompetenzzentrum für Gesundheit, Soziales und Technik",
+  "- Europaschule -"
+ ],
+ "slides": [
+  {
+   "src": "https://sbbz-weimar.de/media/sliderbild1920/schulaussenansicht-sbbz-weimar.webp",
+   "alt": "Schulaußenansicht SBBZ Weimar",
+   "srcset": "https://sbbz-weimar.de/media/sliderbild500/schulaussenansicht-sbbz-weimar.webp 500w, https://sbbz-weimar.de/media/sliderbild700/schulaussenansicht-sbbz-weimar.webp 700w, https://sbbz-weimar.de/media/sliderbild1100/schulaussenansicht-sbbz-weimar.webp 1100w, https://sbbz-weimar.de/media/sliderbild1920/schulaussenansicht-sbbz-weimar.webp 1920w"
+  },
+  {
+   "src": "https://sbbz-weimar.de/media/sliderbild1920/dsc_6003-web3.jpg",
+   "alt": "Schulansicht außen",
+   "srcset": "https://sbbz-weimar.de/media/sliderbild500/dsc_6003-web3.jpg 500w, https://sbbz-weimar.de/media/sliderbild700/dsc_6003-web3.jpg 700w, https://sbbz-weimar.de/media/sliderbild1100/dsc_6003-web3.jpg 1100w, https://sbbz-weimar.de/media/sliderbild1920/dsc_6003-web3.jpg 1920w"
+  },
+  {
+   "src": "https://sbbz-weimar.de/media/sliderbild1920/aussen-6.jpg",
+   "alt": "Schulansicht außen",
+   "srcset": "https://sbbz-weimar.de/media/sliderbild500/aussen-6.jpg 500w, https://sbbz-weimar.de/media/sliderbild700/aussen-6.jpg 700w, https://sbbz-weimar.de/media/sliderbild1100/aussen-6.jpg 1100w, https://sbbz-weimar.de/media/sliderbild1920/aussen-6.jpg 1920w"
+  }
+ ],
+ "quickLinks": [
+  {
+   "title": "Moodle-Schulcloud",
+   "href": "https://sbbz.moodle-weimar.de/login/index.php",
+   "icon": "/media/logo-footer.svg"
+  },
+  {
+   "title": "Erasmus +",
+   "href": "/de/wir-ueber-uns/schulentwicklung/erasmus/",
+   "icon": "/media/people-group-solid.svg"
+  },
+  {
+   "title": "Stadtteil",
+   "href": null,
+   "icon": "/media/tree-city-solid.svg"
+  },
+  {
+   "title": "iPad-Klassen",
+   "href": "/de/service/ipad-klassen/",
+   "icon": "/media/tablet-screen-button.svg"
+  }
+ ],
+ "video": {
+  "src": "https://sbbz-weimar.de/media/ausbildungen-am-sbbz-weimar.mp4",
+  "poster": "https://sbbz-weimar.de/media/vorschaubild-video-ueber-ausbildungsangebote.webp",
+  "fallback": "Ihr Browser kann dieses Video nicht wiedergeben. Vorschaubild Video über Ausbildungsangebote am SBBZ Weimar"
+ },
+ "videoLinks": [
+  {
+   "href": "/de/wir-ueber-uns/medien/schulvideo/",
+   "title": "Unsere Ausbildungsrichtungen im Video",
+   "img": null,
+   "alt": ""
+  },
+  {
+   "href": "/de/wir-ueber-uns/medien/schulbroschuere/",
+   "title": "Unsere Ausbildungsbroschüre",
+   "img": null,
+   "alt": ""
+  }
+ ],
+ "videoHeading": "",
+ "supporters": [
+  {
+   "name": "Marienhof in Erfurt",
+   "href": "https://marienhof-erfurt.de/",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/marienhof-erfurt.png"
+  },
+  {
+   "name": "Saalezahn Dentaltechnik GmbH",
+   "href": "https://www.saalezahn.de/",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/saalezahn-dentaltechnik.png"
+  },
+  {
+   "name": "Ruben Peters Ausbau GmbH",
+   "href": "https://www.ruben-peter.de/",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/ruben_peter.png"
+  }
+ ],
+ "supportersHeading": "Unser Förderverein dankt seinen Unterstützern",
+ "seals": [
+  {
+   "name": "fobiz-schule_2025-2026.png",
+   "href": null,
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/fobiz-schule_2025-2026.png"
+  },
+  {
+   "name": "Europaschule",
+   "href": "https://bildung.thueringen.de/international/schulen/europa",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/logo_europaschule_thueringen_1_1.png"
+  },
+  {
+   "name": "Erasmusplus",
+   "href": "https://www.erasmusplus.de/erasmus/berufsbildung",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/de_europaeischen_union_neg_1.png"
+  },
+  {
+   "name": "QM",
+   "href": "https://www.certqua.de/",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/certqua_zeichen_azav_gross_4c.png"
+  },
+  {
+   "name": "Praxisschule",
+   "href": "https://www.zlb.uni-jena.de/3905/praxissemester",
+   "img": "https://sbbz-weimar.de/media/logoPartnerBild/logo_praxissemesterschule-sj2425_2_1.jpg"
+  }
+ ]
+}

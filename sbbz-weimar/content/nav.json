@@ -1,0 +1,522 @@
+{
+ "de": [
+  {
+   "label": "Wir über uns",
+   "href": "/de/wir-ueber-uns/",
+   "children": [
+    {
+     "label": "Ansprechpartner",
+     "href": "/de/wir-ueber-uns/ansprechpartner/",
+     "children": [
+      {
+       "label": "Schulleitung und Abteilungsleitung",
+       "href": "/de/wir-ueber-uns/ansprechpartner/schulleitung-und-abteilungsleitung/"
+      },
+      {
+       "label": "Sekretariat und Schülerverwaltung",
+       "href": "/de/wir-ueber-uns/ansprechpartner/sekretariat-und-schuelerverwaltung/"
+      },
+      {
+       "label": "Kollegium",
+       "href": "/de/wir-ueber-uns/ansprechpartner/kollegium/"
+      },
+      {
+       "label": "Vertrauenslehrer",
+       "href": "/de/wir-ueber-uns/ansprechpartner/vertrauenslehrer/"
+      },
+      {
+       "label": "Beratungslehrer",
+       "href": "/de/wir-ueber-uns/ansprechpartner/beratungslehrer/"
+      },
+      {
+       "label": "Pro Schulwohl",
+       "href": "/de/wir-ueber-uns/ansprechpartner/pro-schulwohl/"
+      },
+      {
+       "label": "Gesundheitsbeauftragter",
+       "href": "/de/wir-ueber-uns/ansprechpartner/gesundheitsbeauftragter/"
+      },
+      {
+       "label": "Schulsozialarbeit",
+       "href": "/de/wir-ueber-uns/ansprechpartner/schulsozialarbeit/"
+      },
+      {
+       "label": "Lehrerausbildung",
+       "href": "/de/wir-ueber-uns/ansprechpartner/lehrerausbildung/"
+      },
+      {
+       "label": "Schulförderverein",
+       "href": "/de/wir-ueber-uns/ansprechpartner/schulfoerderverein/"
+      },
+      {
+       "label": "Schülervertretung",
+       "href": "/de/wir-ueber-uns/ansprechpartner/schuelervertretung/"
+      },
+      {
+       "label": "Personalrat",
+       "href": "/de/wir-ueber-uns/ansprechpartner/personalrat/"
+      },
+      {
+       "label": "Hausmeister",
+       "href": "/de/wir-ueber-uns/ansprechpartner/hausmeister/"
+      },
+      {
+       "label": "Homepage",
+       "href": "/de/wir-ueber-uns/ansprechpartner/homepage/"
+      }
+     ]
+    },
+    {
+     "label": "Schulentwicklung",
+     "href": "/de/wir-ueber-uns/schulentwicklung/",
+     "children": [
+      {
+       "label": "Unser Leitbild",
+       "href": "/de/wir-ueber-uns/schulentwicklung/unser-leitbild/"
+      },
+      {
+       "label": "Schulentwicklungssäulen",
+       "href": "/de/wir-ueber-uns/schulentwicklung/schulentwicklungssaeulen/"
+      },
+      {
+       "label": "Erasmus +",
+       "href": "/de/wir-ueber-uns/schulentwicklung/erasmus/"
+      }
+     ]
+    },
+    {
+     "label": "Unterstützer",
+     "href": "/de/wir-ueber-uns/unterstuetzer/"
+    },
+    {
+     "label": "Medien",
+     "href": "/de/wir-ueber-uns/medien/",
+     "children": [
+      {
+       "label": "Schulvideo",
+       "href": "/de/wir-ueber-uns/medien/schulvideo/"
+      },
+      {
+       "label": "Schulbroschüre",
+       "href": "/de/wir-ueber-uns/medien/schulbroschuere/"
+      }
+     ]
+    },
+    {
+     "label": "Aktivitäten",
+     "href": "/de/wir-ueber-uns/aktivitaeten/"
+    },
+    {
+     "label": "Kontakt",
+     "href": "/de/wir-ueber-uns/kontakt/"
+    }
+   ]
+  },
+  {
+   "label": "Berufliche Bildung",
+   "href": "/de/berufliche-bildung/",
+   "children": [
+    {
+     "label": "Berufsschule",
+     "href": "/de/berufliche-bildung/berufsschule/",
+     "children": [
+      {
+       "label": "Anlagenmechaniker",
+       "href": "/de/berufliche-bildung/berufsschule/anlagenmechaniker/"
+      },
+      {
+       "label": "Umwelttechnologen",
+       "href": "/de/berufliche-bildung/berufsschule/umwelttechnologen/"
+      },
+      {
+       "label": "KfZ-Mechatroniker",
+       "href": "/de/berufliche-bildung/berufsschule/kfz-mechatroniker/"
+      },
+      {
+       "label": "Straßenbauer",
+       "href": "/de/berufliche-bildung/berufsschule/strassenbauer/"
+      },
+      {
+       "label": "Stuckateur",
+       "href": "/de/berufliche-bildung/berufsschule/stuckateur/"
+      },
+      {
+       "label": "Trockenbaumonteur",
+       "href": "/de/berufliche-bildung/berufsschule/trockenbaumonteur/"
+      },
+      {
+       "label": "Tiefbaufacharbeiter",
+       "href": "/de/berufliche-bildung/berufsschule/tiefbaufacharbeiter/"
+      },
+      {
+       "label": "Zahntechniker",
+       "href": "/de/berufliche-bildung/berufsschule/zahntechniker/"
+      }
+     ]
+    },
+    {
+     "label": "Berufsfachschule",
+     "href": "/de/berufliche-bildung/berufsfachschule/",
+     "children": [
+      {
+       "label": "Kinderpflege",
+       "href": "/de/berufliche-bildung/berufsfachschule/kinderpflege/"
+      },
+      {
+       "label": "Gesundheit und Soziales, ein- und zweijährig",
+       "href": "/de/berufliche-bildung/berufsfachschule/gesundheit-und-soziales-ein-und-zweijaehrig/"
+      }
+     ]
+    },
+    {
+     "label": "Höhere Berufsfachschule",
+     "href": "/de/berufliche-bildung/hoehere-berufsfachschule/",
+     "children": [
+      {
+       "label": "Pflege",
+       "href": "/de/berufliche-bildung/hoehere-berufsfachschule/pflege/"
+      },
+      {
+       "label": "Operationstechnischer Assistent",
+       "href": "/de/berufliche-bildung/hoehere-berufsfachschule/operationstechnischer-assistent/"
+      },
+      {
+       "label": "Sozialassistent",
+       "href": "/de/berufliche-bildung/hoehere-berufsfachschule/sozialassistent/"
+      }
+     ]
+    },
+    {
+     "label": "Fachschule",
+     "href": "/de/berufliche-bildung/fachschule/",
+     "children": [
+      {
+       "label": "Erzieher",
+       "href": "/de/berufliche-bildung/fachschule/erzieher/"
+      },
+      {
+       "label": "Erzieher (berufsbegleitend)",
+       "href": "/de/berufliche-bildung/fachschule/erzieher-berufsbegleitend/"
+      },
+      {
+       "label": "Heilerziehungspflege",
+       "href": "/de/berufliche-bildung/fachschule/heilerziehungspflege/"
+      },
+      {
+       "label": "Heilpädagogik (berufsbegleitend)",
+       "href": "/de/berufliche-bildung/fachschule/heilpaedagogik-berufsbegleitend/"
+      }
+     ]
+    },
+    {
+     "label": "Alle beruflichen Bildungsgänge",
+     "href": "/de/berufliche-bildung/alle-beruflichen-bildungsgaenge/"
+    }
+   ]
+  },
+  {
+   "label": "Schulische Bildung",
+   "href": "/de/schulische-bildung/",
+   "children": [
+    {
+     "label": "Sprachliche Vorbereitung",
+     "href": "/de/schulische-bildung/sprachliche-vorbereitung/",
+     "children": [
+      {
+       "label": "Vorklasse",
+       "href": "/de/schulische-bildung/sprachliche-vorbereitung/vorklasse/"
+      },
+      {
+       "label": "Bvj-Sprache",
+       "href": "/de/schulische-bildung/sprachliche-vorbereitung/bvj-sprache/"
+      }
+     ]
+    },
+    {
+     "label": "Hauptschulabschluss",
+     "href": "/de/schulische-bildung/hauptschulabschluss/",
+     "children": [
+      {
+       "label": "Berufsvorbereitungsjahr Technik",
+       "href": "/de/schulische-bildung/hauptschulabschluss/berufsvorbereitungsjahr-technik/"
+      }
+     ]
+    },
+    {
+     "label": "Realschulabschluss",
+     "href": "/de/schulische-bildung/realschulabschluss/",
+     "children": [
+      {
+       "label": "Berufsfachschule Gesundheit und Soziales",
+       "href": "/de/schulische-bildung/realschulabschluss/berufsfachschule-gesundheit-und-soziales/"
+      }
+     ]
+    },
+    {
+     "label": "Fachhochschulreife",
+     "href": "/de/schulische-bildung/fachhochschulreife/",
+     "children": [
+      {
+       "label": "Erzieher",
+       "href": "/de/schulische-bildung/fachhochschulreife/erzieher/"
+      },
+      {
+       "label": "Heilerziehungspflege",
+       "href": "/de/schulische-bildung/fachhochschulreife/heilerziehungspflege/"
+      }
+     ]
+    },
+    {
+     "label": "Alle schulischen Bildungsgänge",
+     "href": "/de/schulische-bildung/alle-schulischen-bildungsgaenge/"
+    }
+   ]
+  },
+  {
+   "label": "Service",
+   "href": "/de/service/",
+   "children": [
+    {
+     "label": "Vertretungspläne",
+     "href": "/de/service/vertretungsplaene/",
+     "children": [
+      {
+       "label": "aktuelle Vertretungspläne",
+       "href": "/de/service/vertretungsplaene/aktuelle-vertretungsplaene/"
+      }
+     ]
+    },
+    {
+     "label": "Klassenpläne",
+     "href": "/de/service/klassenplaene/",
+     "children": [
+      {
+       "label": "Klassenpläne",
+       "href": "/de/service/klassenplaene/klassenplaene/"
+      }
+     ]
+    },
+    {
+     "label": "Turnuspläne",
+     "href": "/de/service/turnusplaene/",
+     "children": [
+      {
+       "label": "Turnuspläne",
+       "href": "/de/service/turnusplaene/turnusplaene/"
+      }
+     ]
+    },
+    {
+     "label": "Nachschreibetermine",
+     "href": "/de/service/nachschreibetermine/",
+     "children": [
+      {
+       "label": "Nachschreibetermine im Schuljahr",
+       "href": "/de/service/nachschreibetermine/nachschreibetermine-im-schuljahr/"
+      }
+     ]
+    },
+    {
+     "label": "Unterrichtszeiten",
+     "href": "/de/service/unterrichtszeiten/",
+     "children": [
+      {
+       "label": "Unterrichtszeiten im Schuljahr",
+       "href": "/de/service/unterrichtszeiten/unterrichtszeiten-im-schuljahr/"
+      }
+     ]
+    },
+    {
+     "label": "Anmeldung/Fristen",
+     "href": "/de/service/anmeldung-fristen/",
+     "children": [
+      {
+       "label": "Schulanmeldung - Gesundheit",
+       "href": "/de/service/anmeldung-fristen/schulanmeldung-gesundheit/"
+      },
+      {
+       "label": "Schulanmeldung - Technik",
+       "href": "/de/service/anmeldung-fristen/schulanmeldung-technik/"
+      }
+     ]
+    },
+    {
+     "label": "Termine",
+     "href": "/de/termine/"
+    },
+    {
+     "label": "Belehrungen",
+     "href": "/de/service/belehrungen/"
+    },
+    {
+     "label": "iPad-Klassen",
+     "href": "/de/service/ipad-klassen/"
+    },
+    {
+     "label": "Bibliothek",
+     "href": "/de/service/bibliothek/"
+    },
+    {
+     "label": "Bistro",
+     "href": "/de/service/bistro/"
+    },
+    {
+     "label": "Wohnheim",
+     "href": "/de/service/wohnheim/"
+    },
+    {
+     "label": "Moodle-Schulcloud",
+     "href": "https://sbbz.moodle-weimar.de/login/"
+    },
+    {
+     "label": "Klassenbuch",
+     "href": "https://mein.cevex.de/bbz-weimar/Tenant/Login"
+    }
+   ]
+  }
+ ],
+ "footer": [
+  {
+   "label": "Kontakt",
+   "href": "/de/wir-ueber-uns/kontakt/"
+  },
+  {
+   "label": "Impressum",
+   "href": "/de/impressum/"
+  },
+  {
+   "label": "Datenschutz",
+   "href": "/de/datenschutz/"
+  },
+  {
+   "label": "Sitemap",
+   "href": "/de/sitemap/"
+  },
+  {
+   "label": "Gender",
+   "href": "/de/gender-hinweis/"
+  }
+ ],
+ "en": [
+  {
+   "label": "All about us",
+   "href": "/en/all-about-us/",
+   "children": [
+    {
+     "label": "Anspechpartner",
+     "href": "/en/all-about-us/anspechpartner/"
+    },
+    {
+     "label": "Schulentwicklung",
+     "href": "/en/all-about-us/schulentwicklung/"
+    },
+    {
+     "label": "Medien",
+     "href": "/en/all-about-us/medien/"
+    },
+    {
+     "label": "Kontakt",
+     "href": "/en/all-about-us/kontakt/"
+    }
+   ]
+  },
+  {
+   "label": "Vocational education",
+   "href": "/en/vocational-education/",
+   "children": [
+    {
+     "label": "Berufsschule",
+     "href": "/en/vocational-education/berufsschule/"
+    },
+    {
+     "label": "Berufsfachschule",
+     "href": "/en/vocational-education/berufsfachschule/"
+    },
+    {
+     "label": "Höhere Berufsfachschule",
+     "href": "/en/vocational-education/hoehere-berufsfachschule/"
+    },
+    {
+     "label": "Fachschule",
+     "href": "/en/vocational-education/fachschule/"
+    }
+   ]
+  },
+  {
+   "label": "School education",
+   "href": "/en/school-education/",
+   "children": [
+    {
+     "label": "Ziel: sprachliche Vorbereitung",
+     "href": "/en/school-education/ziel-sprachliche-vorbereitung/"
+    },
+    {
+     "label": "Ziel: Hauptschulabschluss",
+     "href": "/en/school-education/ziel-hauptschulabschluss/"
+    },
+    {
+     "label": "Ziel: Realschulabschluss",
+     "href": "/en/school-education/ziel-realschulabschluss/"
+    },
+    {
+     "label": "Fachhochschulreife",
+     "href": "/en/school-education/fachhochschulreife/"
+    }
+   ]
+  },
+  {
+   "label": "Service",
+   "href": "/en/service/",
+   "children": [
+    {
+     "label": "Vertretungsplan",
+     "href": "/en/service/vertretungsplan/"
+    },
+    {
+     "label": "Turnuspläne",
+     "href": "/en/service/turnusplaene/"
+    },
+    {
+     "label": "Nachschreibetermine",
+     "href": "/en/service/nachschreibetermine/"
+    },
+    {
+     "label": "Unterrichtszeiten",
+     "href": "/en/service/unterrichtszeiten/"
+    },
+    {
+     "label": "Anmeldungen / Fristen",
+     "href": "/en/service/anmeldungen-fristen/"
+    },
+    {
+     "label": "Reinigung Raucherbereich",
+     "href": "/en/service/reinigung-raucherbereich/"
+    },
+    {
+     "label": "Dokumente",
+     "href": "/en/service/dokumente/"
+    },
+    {
+     "label": "iPad-Klassen",
+     "href": "/en/service/ipad-klassen/"
+    },
+    {
+     "label": "Bibliothek",
+     "href": "/en/service/bibliothek/"
+    },
+    {
+     "label": "Bistro",
+     "href": "/en/service/bistro/"
+    },
+    {
+     "label": "Wohnheim",
+     "href": "/en/service/wohnheim/"
+    }
+   ]
+  },
+  {
+   "label": "Termine",
+   "href": "/en/termine/"
+  }
+ ]
+}
