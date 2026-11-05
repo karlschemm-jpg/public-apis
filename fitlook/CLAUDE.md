@@ -7,6 +7,115 @@ Sales angle (landing headline + first screen): "How I packed 2 weeks of stylish 
 The app lives in this folder (`fitlook/`) inside the `karlschemm-jpg/public-apis` repo, branch
 `claude/fitlook-saas-kwop-rxviuw`. On Vercel, set **Root Directory = `fitlook`**.
 
+## PREMIUM BUILD (Kwop Builder, 2026-11-05) — these rules REPLACE older rules on the same topics below
+
+**THE RESULT: "Carry-on capsule"** — from one photo of a piece they'd pack, FitLook builds a 14-day carry-on capsule
+around it: the pieces to bring and a look for every day. Paywall title pattern: "Your 14-day city-break capsule is ready."
+
+### Kwop's selling rules (follow literally)
+1. Landing sells the RESULT, never the price: no plans, prices, pricing section or "Pricing" link on "/".
+2. One action everywhere: **"Pack my carry-on"** (main CTA). Unlock words: **"See my full capsule"**.
+3. Try first: the hero IS the product (photo → real analysis) without an account.
+4. Sign-up in one tap when they want to keep the result: "Continue with Google" first (hidden until Google is configured),
+   email + password under it, no confirmation, no card. Sheet title: **"Save your capsule"**. The try is never lost.
+5. Aha = watching THEIR capsule being made: named steps, % counting to 99, then "Your carry-on capsule is ready."
+6. Paywall at the peak, over their own result: their piece + one insight + Day 1 in clear, the rest blurred.
+7. Prices per day: "$0.30 / day" big, "$9 / month" small (Kwop's `per_day`).
+8. Checkout inside the page (Whop Elements embed in a sheet via POST KWOP_API/checkout), never another site.
+9. Three plans that climb; a finished quota or locked part shows the next plan (upgrade sheet).
+10. Phones first (390 px), then beautiful at 1440 px.
+11. Everything real: real upload, real background removal (in the browser), real Gemini tagging, real capsule engine
+    (`lib/matcher.ts`), real checkout. No fake data.
+12. No dead ends: a returning unpaid visitor lands on their locked capsule (`/start` decides), a payer in the app.
+13. Honest: no fake reviews, counts, logos or countdowns. Only true product facts ("Ready in about 10 seconds").
+
+### Kwop API (server only, `lib/kwop.ts`)
+`GET KWOP_API` → `{ name, checkout, plans:[{ id, name, price_cents, interval, per_day, yearly:{price_cents, per_day}|null }] }`
+(`getKwopPlans()`, cached 10 min) · `POST /checkout {plan, period, email}` → `{ embed, ref, fallback_url }` or 409
+`payments_off` · `POST /confirm {ref}` → `{ ok, paid }` · `GET /plan?email=` (`getPlan`, cached 60 s on globalThis) ·
+`POST /cancel {email, except_ref?}` · `POST /event` (fire-and-forget) · `POST /connect {url}`.
+Visit tracking only on public pages: `<script src="https://kwop.io/flow.js" data-site="s_ff5952e9df" defer>` (landing,
+signup, login, shared results). /privacy says "visit analytics by Kwop".
+
+### Blueprint — FitLook's own funnel (TRY FIRST)
+Why try first: the core feature (background removal + capsule) runs in seconds from ONE photo, so the visitor can see
+their own result before any form — exactly how Acloset/Whering hook people (first item digitized = aha), but on the web.
+
+1. **Hero (first 10 s), "/"**: title (Bodoni Moda) **"Two weeks of outfits. One carry-on."**; one line "Snap one piece
+   you'd pack. FitLook builds the **whole capsule** and a **look for every day**." Under it the **drop zone**, a big card
+   with crop marks: "Drop a piece you'd pack" · "Take a photo" (opens the camera on phones) · "or try our striped tee"
+   (one-tap example). Trip chips (luggage-tag style): City break (default) · Beach · Cold & snowy · Work trip.
+   Facts line: "Free to try · No card · Ready in about 10 seconds". Photos stay private, deletable.
+2. **The work (in place, ≥ 3 s, holds at 99 % until the server answers)**: their photo in a scan frame (crop marks, a
+   sweeping scan line, measurement points, a progress ring with %). Steps tick one by one:
+   "Lifting your piece off the background" (real, browser) → "Reading fabric, color & warmth" (real, Gemini) →
+   "Matching it to a 14-day capsule" → "Styling every day" → "Packing the carry-on" (real, `lib/matcher.ts`).
+   Then **"Your carry-on capsule is ready."** (short success animation).
+3. **Locked result (in place, saved in `tries`)**: CLEAR — their cut-out piece on white, its tags ("Navy & white striped
+   tee · light · casual") and one insight ("Shows up in 6 of your 14 looks"), and **Day 1** look. BLURRED — the big number
+   ("11 pieces · 14 looks"), days 2–14 lookbook grid, the packing list. Lock + **"See my full capsule"**.
+4. **Sign-up sheet** (no account yet): "Save your capsule" · "Continue with Google" · or · email · password (show/hide) ·
+   "Save my capsule" · "Already have an account? Log in" · Terms/Privacy line. The try is attached to the new account
+   (cookie `fl_try`), its piece is imported into the wardrobe and its capsule becomes a real trip with 14 looks.
+5. **Paywall sheet over the result** (`/r/[id]?unlock=1`): ✕ · **"Your 14-day city-break capsule is ready."** · personal
+   line "Built around your navy striped tee: 11 pieces, 14 looks, one carry-on." · "Choose your plan." + Monthly/Yearly
+   (−20%) · 3 radio rows (Pro pre-selected, "Most popular") with the price per day big · "Continue with Pro" ·
+   "$9.00 due today, then every month · Cancel anytime" · "Secure payment, processed by Whop" (chips Whop · Card) ·
+   "What you unlock with Pro" (quotas in capsule units) · 3 questions · small print (renews until canceled, USD).
+   Below, for Free users who never trialed: "or try Pro free for 7 days, no card" (the no-card trial, see below).
+6. **Checkout sheet** (bottom sheet with grab handle on phones, centered card on computers): "<Plan> · $9.00 / month",
+   Whop Elements embedded (`components/checkout-sheet.tsx`), "Secure payment by Whop · Cancel in 1 click".
+   409 payments_off → "Payments open in a moment. Your capsule is saved."
+7. **Unlock film** (4–6 s, skippable): "You're on Pro" → 3 icons of what's unlocked → "Let's go" → the capsule unblurs.
+   Fallback buyers land on `/dashboard?paid=1&ref=…` → same confirm + film.
+8. Sticky bottom bar when the paywall is closed: "See my full capsule · $0.30 / day". Tapping any blurred part reopens it.
+
+**Plans in capsule units** (quotas per calendar month, server-side):
+| Plan | Tag | Capsules (trips) / mo | Pieces in closet | Looks styled / mo | Extras |
+|---|---|---|---|---|---|
+| Starter $5 ($0.17/day) | Weekend getaways | 2 | 50 | 10 plans | basic styling |
+| Pro $9 ($0.30/day) — Most popular | Regular travelers | 10 | 200 | 50 plans | advanced matching, weather tweaks, AI stylist notes |
+| Global $19 ($0.63/day) | Frequent flyers & creators | 30 | 500 | 150 plans | priority AI, PDF packing lists |
+Yearly: $48 / $86 / $182 (−20%). Free: 3 piece scans, 1 capsule, 1 look plan a month; capsules stay blurred past Day 1.
+Anonymous tries: 3 a day per device (cookie `fl_dev`) and per IP (hashed), counted on the server.
+
+**Visual direction — editorial lookbook.** White `#FFFFFF` / ink `#0A0A0A`, greys `#F4F4F2` `#E6E6E2` `#6B6B66`, one
+seasonal accent: FitLook lime `#C8FF3D` (highlights, the main button, progress). Dark mode: `#0B0B0A` / `#F5F5F2`.
+Fonts (next/font): **Bodoni Moda** (headings, numbers in the lookbook, italics for captions) + **Schibsted Grotesk** (UI,
+body). Radius 16 px, 1 px hairlines, soft shadows. Signature elements: (1) the **scan frame** — crop marks + sweeping scan
+line + measurement dots + progress ring over the garment; (2) the **lookbook grid** — "Day 03" Bodoni numerals over
+cut-out looks on paper-white tiles; (3) **luggage tags** — chips and badges shaped like paper tags with a punched hole.
+
+**Landing order**: sticky top bar (logo · Log in · small "Pack my carry-on") → try-first hero → motion VSL (HTML/CSS/JS,
+7 scenes, ~60 s, muted autoplay, replay button; `VSL.md` has the voice-over; `public/vsl.mp4` replaces it if present) →
+How it works (3 steps in animated phone frames) → The product in action (4 short feature loops) → The usual way vs
+FitLook (comparison) → Questions (6) → Final block "Tonight: pack once, wear it all trip." + CTA → footer
+(logo, Terms, Privacy, Log in, ©). Sticky "Pack my carry-on" bar on phones. No prices anywhere on "/".
+
+**Share-ready results**: `/r/[id]` is shareable (public view = teaser + "Make yours"), with a next/og image of the
+capsule and a Share button (Web Share API, copy-link fallback).
+
+**Existing users**: keep accounts, data, plans, grace periods and trials. Users with `onboarding_done` skip any new flow.
+The no-card 7-day trial stays (secondary link in the paywall), real Kwop plans stay the primary path.
+
+### Audit against the premium rules (2026-11-05) — gaps to close
+- [ ] Landing shows plans + prices + "Pricing" link → remove (rule 1).
+- [ ] Hero is a static mock, not the product → try-first drop zone with real analysis (rules 3, 5, 11).
+- [ ] CTA wording "Start free" → "Pack my carry-on" everywhere (rule 2).
+- [ ] No anonymous tries, no locked result, no blur → `tries` table + `/api/try` + locked result + `/r/[id]` (rules 3, 6).
+- [ ] Sign-up is a page with email only → sign-up sheet over the result, Google first when configured (rule 4).
+- [ ] Paywall = 3 price cards per month → rows with price per day, Monthly/Yearly, "Continue with <Plan>" (rules 6, 7).
+- [ ] Payment leaves the site (kwop.io/…/pay → whop.com) → embedded Whop checkout sheet + /api/checkout + confirm (rule 8).
+- [ ] No unlock moment after paying → unlock film + unblur in place (6.6).
+- [ ] Upgrades open the same 3-plan paywall → upgrade sheet with the next plan only + cancel except_ref (rule 9, section 7).
+- [ ] Billing has no "Change plan" → add.
+- [ ] Fonts Geist only, lime-on-ink "app" look → editorial Bodoni Moda + Schibsted Grotesk, lookbook visuals (section 10).
+- [ ] No VSL, no feature loops, no comparison → add (premium build).
+- [ ] No share image / Share button → next/og + share (premium build).
+- [ ] No Kwop visit tracking, no utm/source capture → flow.js on public pages, `profiles.source` (section 8, 4).
+- [ ] Returning unpaid users land on the dashboard → `/start` sends them to their locked capsule (rule 12).
+- [ ] No Playwright e2e spec in the repo → `tests/e2e.spec.ts` + `scripts/shot.mjs` (section 11).
+
 ## Owner rules (non-negotiable)
 - The owner is not a developer. Never ask product/design questions: decide the simplest option that fits, write it here, keep going.
 - The owner only approves commands and signs in (Supabase, Vercel) when asked.
