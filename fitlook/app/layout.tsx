@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bodoni_Moda, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni", display: "swap", style: ["normal", "italic"], weight: ["400", "500", "600", "700", "800"] });
+const display = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni", display: "swap", style: ["normal", "italic"] }); // variable font: 1 file per style
 const sans = Schibsted_Grotesk({ subsets: ["latin"], variable: "--font-schibsted", display: "swap" });
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

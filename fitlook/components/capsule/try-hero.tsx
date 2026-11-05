@@ -2,11 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Camera, ImageUp, Lock, Sparkles } from "lucide-react";
-import { removeBackground } from "@/lib/bg-remove";
 import { cn } from "@/lib/utils";
 import { ScanWork } from "@/components/capsule/scan-work";
 import { CapsuleView } from "@/components/capsule/capsule-result";
-import { SignupSheet } from "@/components/signup-sheet";
+import dynamic from "next/dynamic";
+
+const SignupSheet = dynamic(() => import("@/components/signup-sheet").then((m) => m.SignupSheet), { ssr: false });
 import type { CapsuleResult, Piece, TripKind } from "@/lib/capsule";
 
 const TRIPS: { key: TripKind; label: string }[] = [
@@ -69,6 +70,7 @@ export function TryHero() {
     setPhase({ k: "working", preview });
     topRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
     try {
+      const { removeBackground } = await import("@/lib/bg-remove");
       const cut = await removeBackground(file);
       await wait(Math.max(0, 700 - (Date.now() - t0)));
       setDone(1);
@@ -216,7 +218,7 @@ export function TryHero() {
           </motion.div>
         )}
       </AnimatePresence>
-      <SignupSheet open={signup} onOpenChange={setSignup} />
+      {signup && <SignupSheet open={signup} onOpenChange={setSignup} />}
     </div>
   );
 }

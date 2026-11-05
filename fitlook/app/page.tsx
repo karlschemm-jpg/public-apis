@@ -6,9 +6,8 @@ import { ArrowRight, Check, Minus } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { TryHero } from "@/components/capsule/try-hero";
-import { Vsl } from "@/components/landing/vsl";
+import { LazyLooksLoop, LazySnapLoop, LazySuitcaseLoop, LazyTripLoop, LazyVsl, LazyWeatherLoop } from "@/components/landing/lazy";
 import { CountUp, Reveal, StickyCta } from "@/components/landing/motion-bits";
-import { LooksLoop, SnapLoop, SuitcaseLoop, TripLoop, WeatherLoop } from "@/components/landing/feature-loops";
 
 const hasVideo = fs.existsSync(path.join(process.cwd(), "public", "vsl.mp4"));
 
@@ -24,7 +23,7 @@ const FAQ = [
 export default function Landing() {
   return (
     <>
-      <Script src="https://kwop.io/flow.js" data-site="s_ff5952e9df" strategy="afterInteractive" />
+      <Script src="https://kwop.io/flow.js" data-site="s_ff5952e9df" strategy="lazyOnload" />
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4 sm:px-6">
           <Logo />
@@ -66,7 +65,7 @@ export default function Landing() {
               <h2 className="text-3xl sm:text-4xl">FitLook in 60 seconds</h2>
               <span className="text-xs text-muted-foreground">Sound off · captions on</span>
             </div>
-            <Vsl video={hasVideo} />
+            <LazyVsl video={hasVideo} />
           </Reveal>
         </section>
 
@@ -95,9 +94,9 @@ export default function Landing() {
           <Reveal><h2 className="text-4xl sm:text-5xl">How it works</h2></Reveal>
           <div className="mt-10 grid gap-12 md:grid-cols-3 md:gap-6">
             {[
-              [<SnapLoop key="a" />, "Snap clothes", "Lay a piece flat, take a photo. The background disappears."],
-              [<TripLoop key="b" />, "Add your trip", "Where you’re going, how long, how warm."],
-              [<LooksLoop key="c" />, "Get your looks", "A capsule that fits one carry-on, and a look for every day."],
+              [<LazySnapLoop key="a" />, "Snap clothes", "Lay a piece flat, take a photo. The background disappears."],
+              [<LazyTripLoop key="b" />, "Add your trip", "Where you’re going, how long, how warm."],
+              [<LazyLooksLoop key="c" />, "Get your looks", "A capsule that fits one carry-on, and a look for every day."],
             ].map(([visual, t, d], i) => (
               <Reveal key={t as string} i={i} className="text-center">
                 {visual}
@@ -125,17 +124,17 @@ export default function Landing() {
               <Reveal i={1} className="rounded-[20px] bg-white p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Trip Planner</div>
                 <div className="font-display mt-1 text-2xl font-semibold">Packed for the weather you set</div>
-                <div className="mt-4"><WeatherLoop /></div>
+                <div className="mt-4"><LazyWeatherLoop /></div>
               </Reveal>
               <Reveal i={2} className="rounded-[20px] bg-white p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">AI Matcher</div>
                 <div className="font-display mt-1 text-2xl font-semibold">A different look every day</div>
-                <div className="mt-4 overflow-hidden rounded-2xl"><LooksLoop /></div>
+                <div className="mt-4 overflow-hidden rounded-2xl"><LazyLooksLoop /></div>
               </Reveal>
               <Reveal i={3} className="rounded-[20px] bg-white p-5">
                 <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Suitcase View</div>
                 <div className="font-display mt-1 text-2xl font-semibold">Check it off, leave nothing behind</div>
-                <div className="mt-4"><SuitcaseLoop /></div>
+                <div className="mt-4"><LazySuitcaseLoop /></div>
               </Reveal>
             </div>
           </div>
