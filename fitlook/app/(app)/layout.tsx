@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { Zap } from "lucide-react";
 import { requireUser } from "@/lib/session";
-import { planCards } from "@/lib/pricing";
+import { paywallPlans } from "@/lib/paywall-data";
 import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BottomNav, SideNav } from "@/components/app-nav";
@@ -24,7 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const upgradeCls = "tap inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-black text-primary-foreground hover:brightness-95";
 
   return (
-    <PaywallProvider plans={planCards(user.email!, trialing ? "free" : plan.key, { trial: canTrial })}>
+    <PaywallProvider plans={await paywallPlans()} current={{ key: plan.key, name: plan.name, paid: plan.paid, status: plan.status }} trialEligible={canTrial}>
       <div className="min-h-dvh lg:grid lg:grid-cols-[260px_1fr]">
         <aside className="no-print sticky top-0 hidden h-dvh flex-col border-r border-border p-5 lg:flex">
           <Logo href="/dashboard" />

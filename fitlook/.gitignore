@@ -42,3 +42,8 @@ next-env.d.ts
 
 !.env.example
 tsconfig.tsbuildinfo
+
+# verification screenshots
+/screenshots
+/test-results
+/playwright-report

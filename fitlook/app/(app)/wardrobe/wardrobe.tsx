@@ -126,7 +126,7 @@ export function Wardrobe({ initial, left: initialLeft, free, first, ai }: { init
           <div className="animate-pop mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-foreground p-4 text-background">
             <div className="flex items-center gap-2 font-bold">
               <Sparkles className="size-5 text-primary" />
-              {phase.firstTime ? "Your first piece is in your closet! 🎉" : `${phase.name} added.`}
+              {phase.firstTime ? "Your first piece is in your closet!" : `${phase.name} added.`}
             </div>
             <Button size="sm" onClick={() => setPhase({ kind: "idle" })}>Add another</Button>
           </div>

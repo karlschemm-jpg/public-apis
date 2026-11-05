@@ -13,6 +13,11 @@ export async function middleware(request: NextRequest) {
     if (plan && /^[\w .-]{1,30}$/.test(plan)) {
       res.cookies.set("fl_plan", plan, { maxAge: 60 * 60 * 24 * 7, path: "/", sameSite: "lax", httpOnly: true });
     }
+    const src = searchParams.get("utm_source") || searchParams.get("ref");
+    if (src && /^[\w .:/-]{1,60}$/.test(src) && !request.cookies.get("fl_src")) {
+      const camp = searchParams.get("utm_campaign");
+      res.cookies.set("fl_src", camp && /^[\w .-]{1,30}$/.test(camp) ? `${src}/${camp}` : src, { maxAge: 60 * 60 * 24 * 30, path: "/", sameSite: "lax", httpOnly: true });
+    }
     if (searchParams.get("trial") === "1") {
       res.cookies.set("fl_trial", "1", { maxAge: 60 * 60 * 24 * 7, path: "/", sameSite: "lax", httpOnly: true });
     }
@@ -54,7 +59,7 @@ export async function middleware(request: NextRequest) {
     return redirect(`/login?next=${encodeURIComponent(pathname + request.nextUrl.search)}`);
   }
   if (user && (pathname === "/" || pathname === "/login" || pathname === "/signup")) {
-    return redirect("/dashboard");
+    return redirect("/start");
   }
   if (user && pathname === "/dashboard" && searchParams.get("paid") === "1") {
     request.cookies.set("fl_fresh", "1");

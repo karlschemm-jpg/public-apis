@@ -1,207 +1,228 @@
+import fs from "node:fs";
+import path from "node:path";
 import Link from "next/link";
-import { ArrowRight, Camera, CalendarDays, Luggage, Shirt, Sparkles, Wand2, X } from "lucide-react";
-import { SiteFooter, SiteHeader } from "@/components/site";
-import { PlanCards } from "@/components/plan-cards";
-import { PAID_PLANS } from "@/lib/plans";
+import Script from "next/script";
+import { ArrowRight, Check, Minus } from "lucide-react";
+import { Logo } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { TryHero } from "@/components/capsule/try-hero";
+import { Vsl } from "@/components/landing/vsl";
+import { CountUp, Reveal, StickyCta } from "@/components/landing/motion-bits";
+import { LooksLoop, SnapLoop, SuitcaseLoop, TripLoop, WeatherLoop } from "@/components/landing/feature-loops";
 
-const LOOKS = [
-  ["tee", "jeans", "sneakers"],
-  ["linen-shirt", "chinos", "loafers"],
-  ["dress", "sandals", "sunglasses"],
-  ["sweater", "jeans", "boots"],
-  ["tee", "shorts", "sneakers"],
-  ["blazer", "chinos", "loafers"],
-  ["linen-shirt", "shorts", "sandals"],
+const hasVideo = fs.existsSync(path.join(process.cwd(), "public", "vsl.mp4"));
+
+const FAQ = [
+  ["Do I need to photograph my whole closet?", "No. Start with one piece you love. FitLook fills the rest of the capsule with classic basics, and you swap in your own clothes whenever you like."],
+  ["Will it work with my clothes?", "Yes: tops, bottoms, dresses, layers, shoes and accessories. Lay the piece flat on a plain surface (a bed, the floor) for the cleanest cut-out."],
+  ["What does it cost?", "You try it free first. The plans show up once your capsule is ready."],
+  ["Is my photo private?", "Yes. It’s stored privately in the US, only you can see it unless you share your capsule, and you can delete it in one tap."],
+  ["Does it know the weather?", "You pick the kind of trip, and in the app you set your dates, temperatures and rain. FitLook layers and swaps pieces to match. It doesn’t read a live forecast."],
+  ["Is there an app to download?", "No download needed. FitLook works in your phone’s browser, and you can add it to your home screen like an app."],
 ];
 
-function StartFree({ className = "" }: { className?: string }) {
-  return (
-    <Link
-      href="/signup"
-      className={`tap inline-flex h-13 items-center gap-2 rounded-full bg-primary px-7 text-base font-black text-primary-foreground shadow-[0_8px_30px_-8px_#c8ff3d] hover:brightness-95 ${className}`}
-    >
-      Start free <ArrowRight className="size-5" />
-    </Link>
-  );
-}
-
 export default function Landing() {
-  const cards = PAID_PLANS.map((p) => ({ key: p.key, name: p.name, price: p.price, tagline: p.tagline, benefits: p.benefits, href: `/signup?plan=${p.name}` }));
   return (
     <>
-      <SiteHeader />
-      <main>
-        {/* HERO: the result + the product working */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-10 pt-10 sm:px-6 lg:grid-cols-2 lg:pt-20">
-          <div className="min-w-0">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-bold">
-              <Sparkles className="size-3.5" /> Your AI stylist for every trip
-            </div>
-            <h1 className="text-[2.6rem] font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
-              2 weeks of outfits.
-              <br />
-              <span className="bg-primary px-2 text-primary-foreground [box-decoration-break:clone]">One carry-on.</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-              Snap your clothes, tell FitLook where you&apos;re headed, and get a ready-to-wear look for every single day — packed into the smallest
-              bag you own.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <StartFree />
-              <span className="text-sm text-muted-foreground">Free · No credit card · 30 seconds</span>
-            </div>
-          </div>
+      <Script src="https://kwop.io/flow.js" data-site="s_ff5952e9df" strategy="afterInteractive" />
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4 sm:px-6">
+          <Logo />
+          <nav className="flex items-center gap-1.5 sm:gap-3">
+            <Link href="/login" className="rounded-full px-3 py-2 text-sm font-semibold hover:bg-muted">Log in</Link>
+            <ThemeToggle />
+            <a href="#try" className="tap hidden rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background sm:block">Pack my carry-on</a>
+          </nav>
+        </div>
+      </header>
 
-          <div className="relative min-w-0">
-            <div className="rounded-[2rem] border border-border bg-card p-5 shadow-2xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Lisbon · 14 days · 64–78°F</div>
-                  <div className="text-xl font-black">Your carry-on capsule</div>
-                </div>
-                <div className="rounded-full bg-primary px-3 py-1 text-xs font-black text-primary-foreground">11 pieces → 14 looks</div>
-              </div>
-              <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                <div className="aspect-[4/5] overflow-hidden rounded-2xl">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/sample/striped-tee.jpg" alt="A striped tee photographed on a bed" className="size-full object-cover" />
-                </div>
-                <Wand2 className="size-6" />
-                <div className="checker grid aspect-[4/5] place-items-center rounded-2xl p-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/sample/striped-tee-cutout.png" alt="The same tee with the background removed" className="w-full drop-shadow-xl" />
-                </div>
-              </div>
-              <div className="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
-                {LOOKS.map((look, i) => (
-                  <div key={i} className="w-24 shrink-0 rounded-2xl bg-muted p-2">
-                    <div className="mb-1 text-[10px] font-black uppercase">Day {i + 1}</div>
-                    <div className="grid gap-1">
-                      {look.map((g) => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img key={g} src={`/examples/${g}.svg`} alt="" className="mx-auto h-10" />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="absolute -bottom-5 -left-3 flex items-center gap-2 rounded-2xl bg-foreground px-4 py-3 text-sm font-bold text-background shadow-xl">
-              <Luggage className="size-5 text-primary" /> Fits in one carry-on
-            </div>
+      <main>
+        {/* HERO — the product itself */}
+        <section className="mx-auto grid max-w-[1120px] gap-8 px-4 pb-16 pt-8 sm:px-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14 lg:pb-28 lg:pt-16">
+          <div className="min-w-0 lg:pt-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Your AI stylist for every trip</p>
+            <h1 className="mt-3 text-[42px] leading-[1.04] sm:text-6xl lg:text-[64px]">
+              Two weeks of outfits. <em className="font-normal">One</em>{" "}
+              <span className="bg-[linear-gradient(transparent_58%,var(--primary)_58%,var(--primary)_92%,transparent_92%)] px-1 [box-decoration-break:clone]">carry-on.</span>
+            </h1>
+            <p className="mt-5 max-w-md text-[17px] leading-relaxed text-muted-foreground">
+              Snap one piece you’d pack. FitLook builds the <b className="text-foreground">whole capsule</b> and a <b className="text-foreground">look for every day</b>.
+            </p>
+            <ul className="mt-6 hidden space-y-2 text-sm lg:block">
+              {["Free to try · No card", "Ready in about 10 seconds", "Your photo stays private"].map((t) => (
+                <li key={t} className="flex items-center gap-2"><Check className="size-4" aria-hidden /> {t}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="min-w-0">
+            <TryHero />
           </div>
         </section>
 
-        {/* PLANS — directly under the hero (2026-11-03) */}
-        <section id="pricing" aria-labelledby="plans-title" className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 lg:pt-8">
-          <h2 id="plans-title" className="reveal text-3xl font-black tracking-tight sm:text-4xl">Start free. Upgrade when you’re hooked.</h2>
-          <p className="mt-2 text-muted-foreground">Every account starts free with 3 Closet Digitizer scans. Cancel anytime.</p>
-          <div className="mt-10">
-            <PlanCards plans={cards} cta="Start with" />
-          </div>
+        {/* VSL */}
+        <section className="mx-auto max-w-[1120px] px-4 pb-16 sm:px-6 lg:pb-28">
+          <Reveal>
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="text-3xl sm:text-4xl">FitLook in 60 seconds</h2>
+              <span className="text-xs text-muted-foreground">Sound off · captions on</span>
+            </div>
+            <Vsl video={hasVideo} />
+          </Reveal>
         </section>
 
         {/* PROBLEM */}
-        <section className="border-y border-border bg-muted/50">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="reveal max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Sound familiar?</h2>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <section className="border-y border-border bg-muted/60">
+          <div className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 lg:py-28">
+            <Reveal><h2 className="max-w-2xl text-4xl sm:text-5xl">The suitcase problem, <em className="font-normal">every</em> trip.</h2></Reveal>
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
               {[
-                ["You overpack “just in case”", "Half the suitcase comes home unworn — and you paid the checked-bag fee for it."],
-                ["Hotel-room outfit panic", "Every morning: clothes on the bed, 30 minutes gone, still nothing goes together."],
+                ["You overpack “just in case”", "Half the bag comes home unworn — and you paid the checked-bag fee for it."],
+                ["Hotel-room outfit panic", "Every morning: clothes on the bed, twenty minutes gone, still nothing goes together."],
                 ["“Wait, did I pack that?”", "You can’t remember what you brought, so you buy it again at the airport."],
-              ].map(([t, d]) => (
-                <div key={t} className="reveal rounded-3xl bg-card p-6">
-                  <X className="mb-3 size-6 rounded-full bg-foreground p-1 text-background" />
-                  <div className="text-lg font-bold">{t}</div>
+              ].map(([t, d], i) => (
+                <Reveal key={t} i={i} className="rounded-[18px] border border-border bg-background p-6">
+                  <div className="font-display text-5xl font-semibold text-muted-foreground/40">0{i + 1}</div>
+                  <div className="mt-3 text-lg font-semibold">{t}</div>
                   <p className="mt-2 text-muted-foreground">{d}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* SOLUTION */}
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="reveal max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Your closet, your trip, one smart stylist.</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {[
-              [Camera, "Closet Digitizer", "Upload a photo, the background disappears instantly. Your clothes, clean and ready to mix."],
-              [CalendarDays, "Trip Planner", "Destination, days and forecast in. A tailored capsule packing list out."],
-              [Shirt, "AI Matcher", "Full outfits for every day — tops, bottoms, layers, shoes and accessories that work together."],
-              [Luggage, "Suitcase View", "Everything you’re bringing in one swipeable list. Check it off, leave nothing behind."],
-            ].map(([Icon, t, d]) => {
-              const I = Icon as typeof Camera;
-              return (
-                <div key={t as string} className="reveal lift rounded-3xl border border-border bg-card p-6">
-                  <div className="mb-4 grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground">
-                    <I className="size-6" />
-                  </div>
-                  <div className="text-xl font-black">{t as string}</div>
-                  <p className="mt-2 text-muted-foreground">{d as string}</p>
-                </div>
-              );
-            })}
           </div>
         </section>
 
         {/* HOW IT WORKS */}
-        <section className="bg-foreground text-background">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="reveal text-3xl font-black tracking-tight sm:text-4xl">How it works</h2>
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {[
-                ["Snap clothes", "Take quick photos of your favorite pieces. We clean them up instantly."],
-                ["Add trip details", "Where you’re going, how long, and the weather forecast."],
-                ["Get looks", "Your complete day-by-day outfit schedule — and a packing list to match."],
-              ].map(([t, d], i) => (
-                <div key={t} className="reveal">
-                  <div className="mb-3 grid size-12 place-items-center rounded-full bg-primary text-xl font-black text-primary-foreground">{i + 1}</div>
-                  <div className="text-xl font-black">{t}</div>
-                  <p className="mt-2 opacity-70">{d}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-10">
-              <StartFree />
-            </div>
-          </div>
-        </section>
-
-
-        {/* FAQ */}
-        <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
-          <h2 className="reveal text-3xl font-black tracking-tight">Questions</h2>
-          <div className="reveal mt-6 divide-y divide-border rounded-3xl border border-border bg-card">
+        <section className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 lg:py-28">
+          <Reveal><h2 className="text-4xl sm:text-5xl">How it works</h2></Reveal>
+          <div className="mt-10 grid gap-12 md:grid-cols-3 md:gap-6">
             {[
-              ["Do I need a credit card to try it?", "No. Sign up with your email and start digitizing your closet for free."],
-              ["What photos work best?", "Lay the item flat on a plain surface — a bed, a floor, a wall. Good light helps. The background is removed in seconds."],
-              ["Does it really fit in a carry-on?", "FitLook builds a capsule: the fewest pieces that still give you a different look every day. Most 2-week trips land at 10–14 pieces."],
-              ["Can I cancel anytime?", "Yes. Cancel in Account → Billing. You keep your closet and trips on the Free plan."],
-              ["Is my closet private?", "Yes. Your photos and trips are only visible to you."],
-            ].map(([q, a]) => (
-              <details key={q} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between font-bold">
-                  {q} <span className="text-2xl transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-2 text-muted-foreground">{a}</p>
-              </details>
+              [<SnapLoop key="a" />, "Snap clothes", "Lay a piece flat, take a photo. The background disappears."],
+              [<TripLoop key="b" />, "Add your trip", "Where you’re going, how long, how warm."],
+              [<LooksLoop key="c" />, "Get your looks", "A capsule that fits one carry-on, and a look for every day."],
+            ].map(([visual, t, d], i) => (
+              <Reveal key={t as string} i={i} className="text-center">
+                {visual}
+                <div className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Step {i + 1}</div>
+                <div className="font-display mt-1 text-2xl font-semibold">{t as string}</div>
+                <p className="mx-auto mt-1 max-w-xs text-muted-foreground">{d as string}</p>
+              </Reveal>
             ))}
           </div>
         </section>
 
-        {/* FINAL CTA */}
-        <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-          <div className="reveal rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground">
-            <h2 className="text-4xl font-black tracking-tight sm:text-5xl">Your next trip, one bag lighter.</h2>
-            <p className="mx-auto mt-3 max-w-md opacity-80">Snap 3 pieces now and watch your first look come together.</p>
-            <Link href="/signup" className="tap mt-8 inline-flex h-13 items-center gap-2 rounded-full bg-foreground px-7 text-base font-black text-background hover:opacity-90">
-              Start free <ArrowRight className="size-5" />
-            </Link>
+        {/* THE PRODUCT IN ACTION */}
+        <section className="bg-[#0a0a0a] text-[#f5f5f2]">
+          <div className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 lg:py-28">
+            <Reveal><h2 className="max-w-2xl text-4xl sm:text-5xl">Everything for the trip, in one place.</h2></Reveal>
+            <div className="mt-10 grid gap-4 text-[#0a0a0a] sm:grid-cols-2">
+              <Reveal i={0} className="rounded-[20px] bg-white p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Closet Digitizer</div>
+                <div className="font-display mt-1 text-2xl font-semibold">Your clothes, cut out in seconds</div>
+                <div className="checker mt-4 flex h-44 items-center justify-center overflow-hidden rounded-2xl p-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/sample/striped-tee-cutout.png" alt="A tee with the background removed" className="h-full w-auto max-w-full object-contain drop-shadow-xl" />
+                </div>
+              </Reveal>
+              <Reveal i={1} className="rounded-[20px] bg-white p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Trip Planner</div>
+                <div className="font-display mt-1 text-2xl font-semibold">Packed for the weather you set</div>
+                <div className="mt-4"><WeatherLoop /></div>
+              </Reveal>
+              <Reveal i={2} className="rounded-[20px] bg-white p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">AI Matcher</div>
+                <div className="font-display mt-1 text-2xl font-semibold">A different look every day</div>
+                <div className="mt-4 overflow-hidden rounded-2xl"><LooksLoop /></div>
+              </Reveal>
+              <Reveal i={3} className="rounded-[20px] bg-white p-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">Suitcase View</div>
+                <div className="font-display mt-1 text-2xl font-semibold">Check it off, leave nothing behind</div>
+                <div className="mt-4"><SuitcaseLoop /></div>
+              </Reveal>
+            </div>
           </div>
         </section>
+
+        {/* WHAT CHANGES */}
+        <section className="mx-auto max-w-[1120px] px-4 py-16 sm:px-6 lg:py-28">
+          <Reveal><h2 className="text-4xl sm:text-5xl">What changes on your next trip</h2></Reveal>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              [14, "", "looks planned, one per day of a two-week trip"],
+              [10, " s", "about the time to your first capsule"],
+              [1, "", "carry-on. That’s the whole bag."],
+            ].map(([n, s, d], i) => (
+              <Reveal key={d as string} i={i} className="border-t-2 border-foreground pt-4">
+                <CountUp to={n as number} suffix={s as string} className="font-display text-7xl font-semibold" />
+                <p className="mt-2 text-muted-foreground">{d as string}</p>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+
+        {/* THE USUAL WAY vs FITLOOK */}
+        <section className="mx-auto max-w-[1120px] px-4 pb-16 sm:px-6 lg:pb-28">
+          <Reveal><h2 className="text-4xl sm:text-5xl">The usual way vs FitLook</h2></Reveal>
+          <Reveal i={1} className="mt-8 overflow-hidden rounded-[20px] border border-border">
+            <table className="w-full text-left text-[15px]">
+              <thead className="bg-muted text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                <tr><th className="p-4 font-semibold"> </th><th className="p-4 font-semibold">The usual way</th><th className="p-4 font-semibold text-foreground">FitLook</th></tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {[
+                  ["Planning", "An evening of trying things on", "One photo, about 10 seconds"],
+                  ["What you bring", "“Just in case” pieces", "Only what makes a look"],
+                  ["Each morning", "Outfit panic in the hotel room", "Today’s look, already decided"],
+                  ["Leaving", "“Did I forget something?”", "A checklist you tick off"],
+                ].map(([k, a, b]) => (
+                  <tr key={k}>
+                    <th className="p-4 font-semibold">{k}</th>
+                    <td className="p-4 text-muted-foreground"><span className="inline-flex items-start gap-2"><Minus className="mt-1 size-4 shrink-0" aria-hidden />{a}</span></td>
+                    <td className="p-4"><span className="inline-flex items-start gap-2"><Check className="mt-1 size-4 shrink-0 rounded-full bg-primary p-0.5 text-primary-foreground" strokeWidth={3} aria-hidden />{b}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Reveal>
+        </section>
+
+        {/* QUESTIONS */}
+        <section className="mx-auto max-w-3xl px-4 pb-16 sm:px-6 lg:pb-28">
+          <Reveal><h2 className="text-4xl sm:text-5xl">Questions</h2></Reveal>
+          <Reveal i={1} className="mt-6 divide-y divide-border border-y border-border">
+            {FAQ.map(([q, a]) => (
+              <details key={q} className="group py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold">
+                  {q} <span className="text-2xl font-light transition group-open:rotate-45" aria-hidden>+</span>
+                </summary>
+                <p className="mt-2 leading-relaxed text-muted-foreground">{a}</p>
+              </details>
+            ))}
+          </Reveal>
+        </section>
+
+        {/* FINAL */}
+        <section className="mx-auto max-w-[1120px] px-4 pb-24 sm:px-6">
+          <Reveal className="rounded-[24px] bg-primary px-6 py-14 text-center text-primary-foreground sm:py-20">
+            <h2 className="text-4xl sm:text-6xl">Tonight: pack once,<br /><em className="font-normal">wear it all trip.</em></h2>
+            <p className="mx-auto mt-4 max-w-md opacity-80">Snap one piece now. Your 14 looks are ready before the kettle boils.</p>
+            <a href="#try" className="tap mt-8 inline-flex h-14 items-center gap-2 rounded-full bg-[#0a0a0a] px-8 text-[16px] font-semibold text-white">
+              Pack my carry-on <ArrowRight className="size-4" aria-hidden />
+            </a>
+          </Reveal>
+        </section>
       </main>
-      <SiteFooter />
+
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-[1120px] flex-col gap-4 px-4 py-10 pb-28 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:pb-10">
+          <Logo className="text-base text-foreground" />
+          <div className="flex flex-wrap gap-5">
+            <Link href="/terms" className="hover:text-foreground">Terms</Link>
+            <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+            <Link href="/login" className="hover:text-foreground">Log in</Link>
+            <span>© {new Date().getFullYear()} FitLook</span>
+          </div>
+        </div>
+      </footer>
+      <StickyCta />
     </>
   );
 }

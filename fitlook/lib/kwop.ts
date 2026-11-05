@@ -22,7 +22,7 @@ async function kwopFetch(path: string, init?: RequestInit) {
     ...init,
     headers: { "content-type": "application/json", ...(init?.headers || {}) },
     cache: "no-store",
-    signal: AbortSignal.timeout(6000),
+    signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) throw new Error(`Kwop ${path} answered ${res.status}`);
   return res.json();
@@ -145,4 +145,82 @@ export async function cancelSubscription(email: string, userId: string): Promise
     return { message: String(data?.message || "Your subscription is cancelled."), until: row.current_period_end };
   }
   return { message: String(data?.message || "Your subscription is cancelled.") };
+}
+
+// ---------- Plans, in-page checkout, confirmation (premium build) ----------
+
+export type KwopPlanInfo = {
+  id: number;
+  name: string;
+  price_cents: number;
+  currency: string;
+  interval: string;
+  per_day: string; // "$0.30"
+  yearly: { price_cents: number; per_day: string } | null;
+};
+
+const gp = globalThis as typeof globalThis & { __fitlookKwopPlans?: { at: number; value: KwopPlanInfo[] } };
+const FALLBACK_PLANS: KwopPlanInfo[] = [
+  { id: 1064, name: "FitLook Starter", price_cents: 500, currency: "usd", interval: "month", per_day: "$0.17", yearly: { price_cents: 4800, per_day: "$0.13" } },
+  { id: 1065, name: "FitLook Pro", price_cents: 900, currency: "usd", interval: "month", per_day: "$0.30", yearly: { price_cents: 8600, per_day: "$0.24" } },
+  { id: 1066, name: "FitLook Global", price_cents: 1900, currency: "usd", interval: "month", per_day: "$0.63", yearly: { price_cents: 18200, per_day: "$0.50" } },
+];
+
+/** The plans exactly as Kwop sells them (never invented). Cached 10 min; the last known list if Kwop is slow. */
+export async function getKwopPlans(): Promise<KwopPlanInfo[]> {
+  const hit = gp.__fitlookKwopPlans;
+  if (hit && Date.now() - hit.at < 10 * 60_000) return hit.value;
+  try {
+    const data = await kwopFetch("");
+    const plans = (data?.plans || []) as KwopPlanInfo[];
+    if (plans.length) {
+      gp.__fitlookKwopPlans = { at: Date.now(), value: plans };
+      return plans;
+    }
+  } catch (err) {
+    console.error("[kwop] plans failed:", (err as Error).message);
+  }
+  return hit?.value || FALLBACK_PLANS;
+}
+
+export type CheckoutStart = { embed: string | null; ref: string; fallback_url: string } | { error: "payments_off" | "failed" };
+
+export async function startCheckout(planId: number, period: "month" | "year", email: string): Promise<CheckoutStart> {
+  if (!KWOP_API) return { error: "failed" };
+  try {
+    const res = await fetch(`${KWOP_API}/checkout`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan: planId, period, email }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    });
+    if (res.status === 409) return { error: "payments_off" };
+    if (!res.ok) throw new Error(`Kwop /checkout answered ${res.status}`);
+    const d = await res.json();
+    if (!d?.ref || !d?.fallback_url) throw new Error("Kwop /checkout: missing ref");
+    return { embed: d.embed ?? null, ref: String(d.ref), fallback_url: String(d.fallback_url) };
+  } catch (err) {
+    console.error("[kwop] checkout failed:", (err as Error).message);
+    return { error: "failed" };
+  }
+}
+
+export async function confirmCheckout(ref: string): Promise<{ ok: boolean; paid: boolean }> {
+  try {
+    const d = await kwopFetch("/confirm", { method: "POST", body: JSON.stringify({ ref }) });
+    return { ok: Boolean(d?.ok), paid: Boolean(d?.paid) };
+  } catch (err) {
+    console.error("[kwop] confirm failed:", (err as Error).message);
+    return { ok: false, paid: false };
+  }
+}
+
+/** After an upgrade: stop the old plan at the end of its period, keep the new one. */
+export async function cancelOtherPlans(email: string, exceptRef: string) {
+  try {
+    await kwopFetch("/cancel", { method: "POST", body: JSON.stringify({ email, except_ref: exceptRef }) });
+  } catch (err) {
+    console.error("[kwop] cancel except_ref failed:", (err as Error).message);
+  }
 }

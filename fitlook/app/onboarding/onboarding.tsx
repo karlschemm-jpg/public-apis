@@ -1,21 +1,21 @@
 "use client";
 import { useState, useTransition } from "react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { Activity, ArrowLeft, Briefcase, Building2, CalendarDays, CircleHelp, Footprints, Layers, Loader2, Luggage, Moon, MountainSnow, Palmtree, Plane, Shirt, Sparkles, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { finishOnboarding, saveOnboardingAnswer } from "@/app/actions";
 
 type Field = "trip_style" | "pain" | "style_vibe" | "trip_length";
-const STEPS: { field: Field; title: string; sub: string; options: { value: string; emoji: string; label: string; hint: string }[] }[] = [
+const STEPS: { field: Field; title: string; sub: string; options: { value: string; icon: LucideIcon; label: string; hint: string }[] }[] = [
   {
     field: "trip_style",
     title: "Where are you headed next?",
     sub: "We’ll start your closet with pieces for it.",
     options: [
-      { value: "beach", emoji: "🏖️", label: "Beach & sun", hint: "Miami, Cancún, Hawaii" },
-      { value: "city", emoji: "🏙️", label: "City break", hint: "NYC, Paris, Lisbon" },
-      { value: "cold", emoji: "🏔️", label: "Cold & snowy", hint: "Aspen, Denver, Banff" },
-      { value: "work", emoji: "💼", label: "Work trip", hint: "Meetings & dinners" },
+      { value: "beach", icon: Palmtree, label: "Beach & sun", hint: "Miami, Cancún, Hawaii" },
+      { value: "city", icon: Building2, label: "City break", hint: "NYC, Paris, Lisbon" },
+      { value: "cold", icon: MountainSnow, label: "Cold & snowy", hint: "Aspen, Denver, Banff" },
+      { value: "work", icon: Briefcase, label: "Work trip", hint: "Meetings & dinners" },
     ],
   },
   {
@@ -23,10 +23,10 @@ const STEPS: { field: Field; title: string; sub: string; options: { value: strin
     title: "What’s your packing struggle?",
     sub: "Be honest. We’ve all been there.",
     options: [
-      { value: "overpack", emoji: "🧳", label: "I overpack", hint: "Half comes home unworn" },
-      { value: "matching", emoji: "🪞", label: "Nothing matches", hint: "Outfit panic every morning" },
-      { value: "forget", emoji: "🤦", label: "I forget things", hint: "Bought it again at the airport" },
-      { value: "all", emoji: "😅", label: "All of the above", hint: "Help me" },
+      { value: "overpack", icon: Luggage, label: "I overpack", hint: "Half comes home unworn" },
+      { value: "matching", icon: Shirt, label: "Nothing matches", hint: "Outfit panic every morning" },
+      { value: "forget", icon: CircleHelp, label: "I forget things", hint: "Bought it again at the airport" },
+      { value: "all", icon: Layers, label: "All of the above", hint: "Help me" },
     ],
   },
   {
@@ -34,10 +34,10 @@ const STEPS: { field: Field; title: string; sub: string; options: { value: strin
     title: "Your style in one word?",
     sub: "It shapes the looks we put together.",
     options: [
-      { value: "casual", emoji: "👟", label: "Casual", hint: "Tees, denim, sneakers" },
-      { value: "classic", emoji: "🧥", label: "Classic", hint: "Clean lines, neutrals" },
-      { value: "bold", emoji: "✨", label: "Bold", hint: "Color, prints, statements" },
-      { value: "sporty", emoji: "🏃", label: "Sporty", hint: "Athleisure all day" },
+      { value: "casual", icon: Footprints, label: "Casual", hint: "Tees, denim, sneakers" },
+      { value: "classic", icon: Shirt, label: "Classic", hint: "Clean lines, neutrals" },
+      { value: "bold", icon: Sparkles, label: "Bold", hint: "Color, prints, statements" },
+      { value: "sporty", icon: Activity, label: "Sporty", hint: "Athleisure all day" },
     ],
   },
   {
@@ -45,9 +45,9 @@ const STEPS: { field: Field; title: string; sub: string; options: { value: strin
     title: "How long are your trips usually?",
     sub: "We’ll size your capsule to match.",
     options: [
-      { value: "weekend", emoji: "🌙", label: "A weekend", hint: "2–3 days" },
-      { value: "week", emoji: "🗓️", label: "About a week", hint: "5–7 days" },
-      { value: "two_weeks", emoji: "✈️", label: "Two weeks+", hint: "The big one" },
+      { value: "weekend", icon: Moon, label: "A weekend", hint: "2–3 days" },
+      { value: "week", icon: CalendarDays, label: "About a week", hint: "5–7 days" },
+      { value: "two_weeks", icon: Plane, label: "Two weeks+", hint: "The big one" },
     ],
   },
 ];
@@ -112,7 +112,7 @@ export function Onboarding({ initial }: { initial: Partial<Record<Field, string 
                   selected ? "border-foreground bg-primary text-primary-foreground" : "border-border bg-card"
                 )}
               >
-                <span className="text-3xl">{o.emoji}</span>
+                <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl", selected ? "bg-primary-foreground/10" : "bg-muted")}><o.icon className="size-6" aria-hidden /></span>
                 <span>
                   <span className="block text-lg font-black">{o.label}</span>
                   <span className={cn("block text-sm", selected ? "opacity-70" : "text-muted-foreground")}>{o.hint}</span>

@@ -98,23 +98,36 @@ capsule and a Share button (Web Share API, copy-link fallback).
 **Existing users**: keep accounts, data, plans, grace periods and trials. Users with `onboarding_done` skip any new flow.
 The no-card 7-day trial stays (secondary link in the paywall), real Kwop plans stay the primary path.
 
-### Audit against the premium rules (2026-11-05) — gaps to close
-- [ ] Landing shows plans + prices + "Pricing" link → remove (rule 1).
-- [ ] Hero is a static mock, not the product → try-first drop zone with real analysis (rules 3, 5, 11).
-- [ ] CTA wording "Start free" → "Pack my carry-on" everywhere (rule 2).
-- [ ] No anonymous tries, no locked result, no blur → `tries` table + `/api/try` + locked result + `/r/[id]` (rules 3, 6).
-- [ ] Sign-up is a page with email only → sign-up sheet over the result, Google first when configured (rule 4).
-- [ ] Paywall = 3 price cards per month → rows with price per day, Monthly/Yearly, "Continue with <Plan>" (rules 6, 7).
-- [ ] Payment leaves the site (kwop.io/…/pay → whop.com) → embedded Whop checkout sheet + /api/checkout + confirm (rule 8).
-- [ ] No unlock moment after paying → unlock film + unblur in place (6.6).
-- [ ] Upgrades open the same 3-plan paywall → upgrade sheet with the next plan only + cancel except_ref (rule 9, section 7).
-- [ ] Billing has no "Change plan" → add.
-- [ ] Fonts Geist only, lime-on-ink "app" look → editorial Bodoni Moda + Schibsted Grotesk, lookbook visuals (section 10).
-- [ ] No VSL, no feature loops, no comparison → add (premium build).
-- [ ] No share image / Share button → next/og + share (premium build).
-- [ ] No Kwop visit tracking, no utm/source capture → flow.js on public pages, `profiles.source` (section 8, 4).
-- [ ] Returning unpaid users land on the dashboard → `/start` sends them to their locked capsule (rule 12).
-- [ ] No Playwright e2e spec in the repo → `tests/e2e.spec.ts` + `scripts/shot.mjs` (section 11).
+### Audit against the premium rules (2026-11-05) — gaps and how they were closed
+- [x] Landing showed plans + prices + "Pricing" link → removed everywhere public; /pricing is only for signed-in users.
+- [x] Hero was a static mock → try-first drop zone (`components/capsule/try-hero.tsx`): real background removal in the
+      browser, real Gemini tagging, real capsule engine (`lib/capsule.ts` → `lib/matcher.ts`), saved in `tries`.
+- [x] CTA wording → "Pack my carry-on" (top bar, hero, VSL, final block, sticky phone bar); unlock = "See my full capsule".
+- [x] Locked result + blur + `/r/[id]` (owner locked/unlocked, same-browser anonymous owner, public share view).
+- [x] Sign-up sheet "Save your capsule" over the result (`components/signup-sheet.tsx`); Google first when
+      `NEXT_PUBLIC_GOOGLE_AUTH=1` (hidden until the owner sends the OAuth keys); `/claim` attaches the try after Google.
+- [x] Paywall rewritten (`components/paywall.tsx`): title over THEIR capsule, Monthly/Yearly, radio rows with the price per
+      day big (Kwop's `per_day`), "Continue with <Plan>", due-today line, Whop · Card chips, "What you unlock", 3 questions,
+      small print, floating button when the real one scrolls away; the no-card 7-day trial is a small link under it.
+- [x] Checkout inside the page: `/api/checkout` → Kwop `/checkout` → Whop Elements in a bottom sheet
+      (`components/checkout-sheet.tsx`); 409 → "Payments open in a moment. Your capsule is saved."; 15 s → fallback_url.
+- [x] Unlock film (`components/unlock-film.tsx`, 3 scenes ~5 s, skippable) → unblur in place; fallback buyers confirmed on
+      `/dashboard?paid=1&ref=…` (`ConfirmReturn`). `/api/checkout/confirm` retries Kwop `/confirm` 4× (Whop can lag).
+- [x] Upgrade sheet for paid users (next plan only, what it adds, price a day) + `cancel {except_ref}` after an upgrade;
+      Billing has "Change plan".
+- [x] Editorial design system: Bodoni Moda (h1–h3, numerals) + Schibsted Grotesk, white/ink + lime, scan frame, lookbook
+      grid, luggage-tag chips; emoji icons replaced by lucide icons.
+- [x] Motion VSL (`components/landing/vsl.tsx`, `VSL.md`), feature loops in phone frames, comparison, count-ups,
+      framer-motion reveals and spring sheets, reduced motion respected (MotionConfig via useReducedMotion everywhere).
+- [x] Share: next/og image per capsule (`app/r/[id]/opengraph-image.tsx`) + Share button; site OG image.
+- [x] Kwop flow.js on landing, signup, login and public shared capsules; `/privacy` mentions it; `profiles.source` from
+      `utm_source`/`ref` (cookie `fl_src`, first touch, 30 days).
+- [x] `/start` sends a returning unpaid user to their locked capsule, a payer to the app.
+- [x] `tests/e2e.spec.ts` (Playwright, phone 390 + desktop 1440) + `scripts/shot.mjs`. The daily try limit is skipped
+      only when the request carries the server's secret `E2E_KEY` (env, never in the browser bundle).
+- Known third-party noise: Whop's embedded payment frame logs "Permissions policy violation: accelerometer"; the e2e
+  test ignores that message only.
+- Not done yet: Google sign-in (needs the owner's Google OAuth client — steps were sent), a recorded `public/vsl.mp4`.
 
 ## Owner rules (non-negotiable)
 - The owner is not a developer. Never ask product/design questions: decide the simplest option that fits, write it here, keep going.

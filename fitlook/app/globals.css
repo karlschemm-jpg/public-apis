@@ -3,16 +3,17 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafaf7;
-  --foreground: #0d0f0a;
+  /* Editorial lookbook: paper white + ink, one seasonal accent (FitLook lime) */
+  --background: #ffffff;
+  --foreground: #0a0a0a;
   --card: #ffffff;
-  --card-foreground: #0d0f0a;
-  --muted: #efefe9;
-  --muted-foreground: #5f6358;
-  --border: #e3e3dc;
+  --card-foreground: #0a0a0a;
+  --muted: #f4f4f2;
+  --muted-foreground: #6b6b66;
+  --border: #e6e6e2;
   --primary: #c8ff3d;
-  --primary-foreground: #0d0f0a;
-  --ring: #0d0f0a;
+  --primary-foreground: #0a0a0a;
+  --ring: #0a0a0a;
   --checker: #ececE6;
   /* Stats accents (AA on --background and --card) */
   --terracotta: #a8492a;
@@ -22,13 +23,13 @@
   --slate: #24303a;
 }
 .dark {
-  --background: #0b0c09;
-  --foreground: #f4f6ee;
-  --card: #15170f;
-  --card-foreground: #f4f6ee;
-  --muted: #1f2218;
-  --muted-foreground: #a3a897;
-  --border: #2a2e21;
+  --background: #0b0b0a;
+  --foreground: #f5f5f2;
+  --card: #141413;
+  --card-foreground: #f5f5f2;
+  --muted: #1d1d1b;
+  --muted-foreground: #a3a39c;
+  --border: #2a2a27;
   --primary: #c8ff3d;
   --primary-foreground: #0d0f0a;
   --ring: #c8ff3d;
@@ -54,8 +55,17 @@
   --color-sage: var(--sage);
   --color-warm: var(--warm);
   --color-slate: var(--slate);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bodoni), "Bodoni 72", Didot, Georgia, serif;
 }
+
+/* Headings are set in Bodoni Moda, tight, like a fashion magazine */
+h1, h2, h3, .font-display {
+  font-family: var(--font-bodoni), "Bodoni 72", Didot, Georgia, serif;
+  letter-spacing: -0.02em;
+}
+h1, h2 { font-weight: 700; }
+h3 { font-weight: 600; }
 
 body {
   background: var(--background);

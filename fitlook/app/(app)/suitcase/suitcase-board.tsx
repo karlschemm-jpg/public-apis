@@ -55,7 +55,7 @@ export function SuitcaseBoard({ tripId, items: initial, essentials }: { tripId: 
     <div className="space-y-6">
       <div className="rounded-3xl bg-foreground p-5 text-background">
         <div className="flex items-baseline justify-between">
-          <div className="text-xl font-black">{packedCount === total ? "All packed. Bon voyage! ✈️" : `${packedCount} of ${total} packed`}</div>
+          <div className="text-xl font-black">{packedCount === total ? "All packed. Bon voyage!" : `${packedCount} of ${total} packed`}</div>
           <Link href={`/trips/${tripId}`} className="text-sm font-bold text-primary underline-offset-4 hover:underline">Edit list</Link>
         </div>
         <div className="mt-3 h-2.5 rounded-full bg-white/15">

@@ -8,15 +8,12 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
         <nav className="flex items-center gap-1 sm:gap-3">
-          <Link href="/pricing" className="hidden rounded-full px-3 py-2 text-sm font-semibold hover:bg-muted sm:block">
-            Pricing
-          </Link>
           <Link href="/login" className="rounded-full px-3 py-2 text-sm font-semibold hover:bg-muted">
             Log in
           </Link>
           <ThemeToggle />
-          <Link href="/signup" className="tap rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:brightness-95">
-            Start free
+          <Link href="/#try" className="tap rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background">
+            Pack my carry-on
           </Link>
         </nav>
       </div>
@@ -33,7 +30,7 @@ export function SiteFooter() {
           <span>Pack smarter, travel in style.</span>
         </div>
         <div className="flex gap-5">
-          <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
+          <Link href="/login" className="hover:text-foreground">Log in</Link>
           <Link href="/terms" className="hover:text-foreground">Terms</Link>
           <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
           <span>© {new Date().getFullYear()} FitLook</span>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, PartyPopper, Shirt, Sparkles } from "lucide-react";
 import { requireUser, getUsage } from "@/lib/session";
 import { formatDate, TRIP_LABEL, type TripType } from "@/lib/utils";
-import { UpgradeButton } from "@/components/paywall";
+import { ConfirmReturn, UpgradeButton } from "@/components/paywall";
 import { RefreshSoon } from "./refresh-soon";
 
 export const metadata: Metadata = { title: "Home" };
@@ -24,15 +24,16 @@ function Meter({ label, used, max }: { label: string; used: number; max: number 
   );
 }
 
-export default async function Dashboard({ searchParams }: { searchParams: Promise<{ paid?: string }> }) {
-  const { paid } = await searchParams;
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ paid?: string; ref?: string }> }) {
+  const { paid, ref } = await searchParams;
+  const refId = ref && /^[\w-]{3,80}$/.test(ref) ? ref : null;
   const { user, profile, plan, def, supabase } = await requireUser({ fresh: paid === "1" });
   const [usage, { data: trips }, { count: outfitCount }] = await Promise.all([
     getUsage(user.id, profile, plan),
     supabase.from("trips").select("id,destination,start_date,days,trip_type,is_example").order("start_date", { ascending: true, nullsFirst: false }).limit(3),
     supabase.from("outfits").select("id", { count: "exact", head: true }),
   ]);
-  const name = profile.display_name || user.email!.split("@")[0];
+  const name = profile.display_name || (user.email!.split("@")[0].split("+")[0] || "there").replace(/^./, (c) => c.toUpperCase());
   const steps = [
     { done: usage.items > 0, label: "Snap your clothes", href: "/wardrobe", icon: Shirt },
     { done: (trips || []).some((t) => !t.is_example), label: "Add your trip", href: "/trips", icon: CalendarDays },
@@ -41,7 +42,8 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   return (
     <div className="space-y-8">
-      {paid === "1" &&
+      {refId && <ConfirmReturn refId={refId} />}
+      {paid === "1" && !refId &&
         (plan.paid ? (
           <div className="animate-pop rounded-[2rem] bg-primary p-6 text-primary-foreground">
             <PartyPopper className="size-8" />
@@ -67,7 +69,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         ))}
 
       <div>
-        <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Hey {name} 👋</h1>
+        <h1 className="text-4xl sm:text-5xl">Hey {name}.</h1>
         <p className="mt-1 text-muted-foreground">
           You’re on <b className="text-foreground">{plan.name}</b>
           {plan.stale ? " (last known)" : ""}. Usage resets on the 1st of each month.
@@ -83,7 +85,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-foreground p-5 text-background">
           <div>
             <div className="font-black">Ready to pack your whole closet?</div>
-            <div className="text-sm opacity-70">Starter gives you 50 items and 2 trips a month, from $5.</div>
+            <div className="text-sm opacity-70">Starter gives you 50 pieces and 2 capsules a month, from $0.17 a day.</div>
           </div>
           <UpgradeButton className="tap rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label="See plans" />
         </div>

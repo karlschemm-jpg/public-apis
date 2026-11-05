@@ -9,13 +9,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, getUsage, quotaLeft, consume, getSessionUser } from "@/lib/session";
 import { track, cancelSubscription, invalidatePlanCache } from "@/lib/kwop";
 import { trialEnd } from "@/lib/grace";
+import { attachTry } from "@/lib/tries";
 import { nextPlan, PLANS, planKeyFrom } from "@/lib/plans";
 import { buildCapsule, planOutfits, type G, type TripInput } from "@/lib/matcher";
 import { aiEnabled, stylistNotes } from "@/lib/ai";
 import { exampleGarments, exampleTrip } from "@/lib/examples";
 import { CATEGORIES, TRIP_TYPES } from "@/lib/utils";
 
-export type FormState = { error?: string; ok?: string } | undefined;
+export type FormState = { error?: string; ok?: string; field?: "email" | "password" } | undefined;
 
 const site = () => (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 const Email = z.string().trim().toLowerCase().email("Enter a valid email.").max(200);
@@ -31,7 +32,7 @@ export async function signUpAction(_: FormState, form: FormData): Promise<FormSt
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${site()}/auth/callback` } });
   if (error) {
-    if (/registered|exists/i.test(error.message)) return { error: "You already have an account. Log in instead." };
+    if (/registered|exists/i.test(error.message)) return { error: "This email already has an account. Log in?", field: "email" };
     return { error: error.message };
   }
   if (!data.session) {
@@ -40,9 +41,15 @@ export async function signUpAction(_: FormState, form: FormData): Promise<FormSt
   }
   const jar = await cookies();
   const plan = jar.get("fl_plan")?.value;
+  const source = jar.get("fl_src")?.value;
   if (data.user) {
     const admin = createAdminClient();
-    await admin.from("profiles").upsert({ id: data.user.id, email, ...(plan ? { intended_plan: plan.slice(0, 30) } : {}) });
+    await admin.from("profiles").upsert({
+      id: data.user.id,
+      email,
+      ...(plan ? { intended_plan: plan.slice(0, 30) } : {}),
+      ...(source ? { source: source.slice(0, 80) } : {}),
+    });
   }
   jar.delete("fl_plan");
   if (data.user && jar.get("fl_trial")?.value === "1") {
@@ -55,6 +62,16 @@ export async function signUpAction(_: FormState, form: FormData): Promise<FormSt
   }
   jar.delete("fl_trial");
   track("signup", email);
+  // try-first: the capsule they built before signing up is theirs now → straight back to it, paywall open
+  const tryId = jar.get("fl_try")?.value;
+  if (data.user && tryId) {
+    const attached = await attachTry(tryId, data.user.id);
+    jar.delete("fl_try");
+    if (attached) {
+      track("onboarding_done", email);
+      redirect(`/r/${attached}?unlock=1`);
+    }
+  }
   redirect("/onboarding");
 }
 
@@ -65,8 +82,15 @@ export async function signInAction(_: FormState, form: FormData): Promise<FormSt
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data: signed, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: "Wrong email or password." };
+  const jar = await cookies();
+  const tryId = jar.get("fl_try")?.value;
+  if (tryId && signed.user) {
+    const attached = await attachTry(tryId, signed.user.id);
+    jar.delete("fl_try");
+    if (attached) redirect(`/r/${attached}?unlock=1`);
+  }
   const next = String(form.get("next") || "");
   redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
 }
@@ -409,6 +433,8 @@ export async function deleteAccountAction(_: FormState, form: FormData): Promise
   if (String(form.get("confirm") || "").trim().toUpperCase() !== "DELETE") return { error: 'Type DELETE to confirm.' };
   const { user, supabase } = await requireUser();
   const admin = createAdminClient();
+  const { data: tries } = await admin.from("tries").select("image_path").eq("user_id", user.id);
+  if (tries?.length) await admin.storage.from("garments").remove(tries.map((t) => t.image_path));
   const { data: files } = await admin.storage.from("garments").list(user.id, { limit: 1000 });
   if (files?.length) await admin.storage.from("garments").remove(files.map((f) => `${user.id}/${f.name}`));
   const { error } = await admin.auth.admin.deleteUser(user.id);

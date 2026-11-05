@@ -58,7 +58,9 @@ export default async function AccountPage() {
                   : `$${def.price}/month${plan.until ? ` · renews on ${longDate(plan.until)}` : ""}`}
             </div>
           </div>
-          {next && !canceling && !trialing && <UpgradeButton className="tap rounded-full bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground" label={`Upgrade to ${next.name}`} />}
+          {!canceling && !trialing && (plan.paid ? next : true) && (
+            <UpgradeButton className="tap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background" label={plan.paid ? "Change plan" : "See plans"} reason={plan.paid ? `You’re on ${plan.name}` : undefined} />
+          )}
         </div>
         {trialing && (
           <div role="status" className="mt-4 rounded-2xl bg-warm p-4 text-sm text-slate">
