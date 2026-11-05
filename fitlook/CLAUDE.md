@@ -337,6 +337,14 @@ of the app. The landing page still shows monthly prices.
 - [x] 2026-11-03 7-day free trial: 7 unit tests + 3 UI passes (390/1280 px; visitor /pricing → signup → trial running →
       Subscribe paywall → Cancel trial → Free; signed-in Free user → paywall → modal → confirmation → banner → 7 days later
       → "trial ended" + Free, no second trial; zero console errors), RLS check, e2e journey green, deployed.
+- [x] 2026-11-05 PREMIUM BUILD live on https://fitlook-beta.vercel.app: try-first funnel, editorial design, per-day paywall,
+      Whop checkout embedded (verified live: "Subscribe to FitLook $9.00 per month" renders in the sheet, Card only — no
+      Apple Pay shown), unlock film + unblur (verified via the no-card trial path), upgrade sheet, VSL, share images.
+      `tests/e2e.spec.ts` green 3× on 390 px and 1440 px, locally and live. Lighthouse mobile live: performance 83–93
+      (varies run to run; LCP 1.7–3.4 s, CLS 0), accessibility 100, best practices 100, SEO 100. Existing users kept
+      (2 real accounts, data and onboarding intact). Kwop /connect re-sent → "Connected to Kwop.".
+      Pending: Google sign-in (owner's OAuth client ID/secret → Supabase PATCH config/auth external_google_* + Vercel env
+      NEXT_PUBLIC_GOOGLE_AUTH=1 + redeploy), optional recorded public/vsl.mp4, a real paid checkout end to end.
 - [x] Kwop checkout fixed on Kwop's side (2026-11-03): `https://kwop.io/fitlook/pay/1064|1065|1066?email=…` → 302 to a Whop
       checkout (`whop.com/checkout/ch_…`). A real payment → /dashboard?paid=1 round trip is still untested (needs a real card).
       2026-11-03: the owner reports a real payment went through. No FitLook account had a paid plan recorded yet at that
